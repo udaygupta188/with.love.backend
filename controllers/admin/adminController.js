@@ -9,7 +9,8 @@ const createAdmin = async (req, res) => {
     return apiSuccessResponse(
       res, 
       'Admin created successfully', 
-      newAdmin, HTTP_STATUS.CREATED
+      newAdmin, 
+      HTTP_STATUS.CREATED
     );
   } catch (err) {
     return apiErrorResponse(

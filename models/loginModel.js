@@ -1,35 +1,37 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const loginSchema = new Schema({
   email: {
     type: String,
-    required: true
+    required: true,
   },
   userId: {
     type: Schema.Types.ObjectId,
-    ref: 'users',
-    required: true
+    ref: "users",
+    required: true,
   },
   country: {
     type: String,
-    required: true
+    required: true,
   },
   device: {
     type: String,
-    required: true
+    required: true,
   },
   IP: {
     type: String,
-    required: true
+    required: true,
   },
   loggedInAt: {
     type: Date,
     default: Date.now,
-    required: true
-  }
+    required: true,
+  },
+}, {
+  timestamps: true, // Automatically adds createdAt and updatedAt fields
 });
 
-const Login = mongoose.model('Login', loginSchema);
+const Login = mongoose.model("Login", loginSchema);
 
 module.exports = Login;
