@@ -1,31 +1,31 @@
 const bcrypt = require('bcrypt');
-// const User = require('../models/userModel');
+const User = require('../models/userModel');
 const Admin = require('../models/admin/adminModel');
 const helper= require('../utils');
 const { logUserLogin } = require('../services/loginService'); 
 const { refreshTokenSecret } = require('../configs/jwt.config');
 
 
-// const authenticateUser = async (email, password, country, device, IP) => {
-//   try {
-//     const user = await User.findOne({ email });
-//     if (!user) {
-//       throw new Error('Invalid email or password');
-//     }
+const authenticateUser = async (email, password, country, device, IP) => {
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      throw new Error('Invalid email or password');
+    }
 
-//     const isMatch = await bcrypt.compare(password, user.password);
-//     if (!isMatch) {
-//       throw new Error('Invalid email or password');
-//     }
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      throw new Error('Invalid email or password');
+    }
 
-//     // Log user login details
-//     await logUserLogin(email, user._id, country, device, IP);
+    // Log user login details
+    await logUserLogin(email, user._id, country, device, IP);
 
-//     return user;
-//   } catch (error) {
-//     throw error;
-//   }
-// };
+    return user;
+  } catch (error) {
+    throw error;
+  }
+};
 
 const authenticateAdmin = async (emailOrUsername, password) => {
   try {
