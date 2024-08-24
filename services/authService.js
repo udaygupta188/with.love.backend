@@ -1,31 +1,52 @@
 const bcrypt = require('bcrypt');
 const User = require('../models/userModel');
 const Admin = require('../models/admin/adminModel');
+const Session = require('../models/sessionModel');
+const Activity = require('../models/activityModel');
 const helper= require('../utils');
 const { logUserLogin } = require('../services/loginService'); 
 const { refreshTokenSecret } = require('../configs/jwt.config');
 
 
-const authenticateUser = async (email, password, country, device, IP) => {
+const authenticateUser = async (emailOrUsername, password, country, device, IP) => {
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({
+      $or: [
+        { email: emailOrUsername },
+        { username: emailOrUsername }
+      ]
+    });
     if (!user) {
-      throw new Error('Invalid email or password');
+      throw new Error('Invalid email/username or password');
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      throw new Error('Invalid email or password');
+      throw new Error('Invalid email/username or password');
     }
 
-    // Log user login details
-    await logUserLogin(email, user._id, country, device, IP);
+    // Generate a session token
+    const sessionToken = helper.generateSessionToken(user._id);
 
-    return user;
+    // Log user login details
+    await logUserLogin(emailOrUsername, user._id, country, device, IP);
+
+  // Create a new session for this login
+    const session = new Session({
+      user: user._id,
+      token: sessionToken,
+      device,
+      ip_address: IP,
+      login_time: new Date(),
+    });
+    await session.save();
+
+    return { user, sessionToken };
   } catch (error) {
     throw error;
   }
 };
+
 
 const authenticateAdmin = async (emailOrUsername, password) => {
   try {
@@ -92,5 +113,6 @@ const refreshTokens = async (refreshToken) => {
 module.exports = {
   authenticateAdmin,
   generateTokens,
-  refreshTokens
+  refreshTokens,
+  authenticateUser
 };

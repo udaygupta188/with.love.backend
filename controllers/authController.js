@@ -3,12 +3,19 @@ const { apiSuccessResponse, apiErrorResponse, HTTP_STATUS } = require('../utils'
 
 // Controller for user login
 const login = async (req, res) => {
-  const { email, password, country, device, IP } = req.body;
+  const { emailOrUsername, password, country, device, IP } = req.body;
 
   try {
-    const user = await authService.authenticateUser(email, password, country, device, IP);
-    const tokens = await authService.generateTokens(user);
-    return apiSuccessResponse(res, 'User logged in successfully', tokens);
+    const user = await authService.authenticateUser(emailOrUsername, password, country, device, IP);
+    const tokens = await authService.generateTokens(user.user);
+    const sessionToken = user.sessionToken;
+    
+   // Merge tokens and sessionToken into a single object
+   const data = {
+    ...tokens,
+    sessionToken
+  };
+    return apiSuccessResponse(res, 'User logged in successfully', data);
   } catch (error) {
     console.error('User Login error:', error);
     return apiErrorResponse(res, error.message, null, HTTP_STATUS.UNAUTHORIZED);

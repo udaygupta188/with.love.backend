@@ -1,33 +1,33 @@
 const jwt = require('jsonwebtoken');
 const Admin = require('../models/admin/adminModel');
-// const User = require('../models/userModel');
+const User = require('../models/userModel');
 const { accessTokenSecret, refreshTokenSecret } = require('../configs/jwt.config');
 
-// // Middleware to verify user
-// const verifyUser = async (req, res, next) => {
-//   const token = req.header('Authorization')?.replace('Bearer ', '');
+// Middleware to verify user
+const verifyUser = async (req, res, next) => {
+  const token = req.header('Authorization')?.replace('Bearer ', '');
 
-//   if (!token) {
-//     return res.status(401).json({ error: 'Access denied. No token provided.' });
-//   }
+  if (!token) {
+    return res.status(401).json({ error: 'Access denied. No token provided.' });
+  }
 
-//   try {
-//     const decoded = jwt.verify(token, accessTokenSecret);
-//     const user = await User.findById(decoded.id);
+  try {
+    const decoded = jwt.verify(token, accessTokenSecret);
+    const user = await User.findById(decoded.id);
 
-//     if (!user) {
-//       return res.status(401).json({ error: 'User not found.' });
-//     }
+    if (!user) {
+      return res.status(401).json({ error: 'User not found.' });
+    }
 
-//     req.user = user;
-//     next();
-//   } catch (error) {
-//     if (error.name === 'TokenExpiredError') {
-//       return res.status(401).json({ error: 'Token expired.' });
-//     }
-//     res.status(400).json({ error: 'Please Login To Continue.' });
-//   }
-// };
+    req.user = user;
+    next();
+  } catch (error) {
+    if (error.name === 'TokenExpiredError') {
+      return res.status(401).json({ error: 'Token expired.' });
+    }
+    res.status(400).json({ error: 'Please Login To Continue.' });
+  }
+};
 
 // Middleware to verify admin
 const verifyAdmin = async (req, res, next) => {
@@ -100,7 +100,7 @@ const authenticateUser = async (req, res, next) => {
 };
 
 module.exports = { 
-  // verifyUser, 
+  verifyUser, 
   verifyAdmin, 
   roleValidator,
   authenticateUser 
