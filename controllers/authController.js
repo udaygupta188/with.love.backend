@@ -1,4 +1,5 @@
 const authService = require('../services/authService');
+const userService = require('../services/userService');
 const { apiSuccessResponse, apiErrorResponse, HTTP_STATUS } = require('../utils'); // Importing helper functions
 
 // Controller for user login
@@ -9,7 +10,7 @@ const login = async (req, res) => {
     const user = await authService.authenticateUser(emailOrUsername, password, country, device, IP);
     const tokens = await authService.generateTokens(user.user);
     const sessionToken = user.sessionToken;
-    
+
    // Merge tokens and sessionToken into a single object
    const data = {
     ...tokens,
@@ -53,8 +54,30 @@ const refreshToken = async (req, res) => {
   }
 };
 
+// Controller for logged-in users to request password reset
+const forgotPassword = async (req, res) => {
+  try {
+    const {resetUrl} = req.body;
+    if (!resetUrl) {
+      return apiErrorResponse(res, 'Reset URL is required.', null, HTTP_STATUS.BAD_REQUEST);
+    }
+    // Assume `req.user` contains the authenticated user data
+    const userId = req.user._id;
+
+    // Call the service function to handle forgot password
+    const result = await userService.forgotPassword(userId,resetUrl);
+
+    return apiSuccessResponse(res, result.message, null, HTTP_STATUS.OK);
+  } catch (error) {
+    console.error('Forgot Password error:', error);
+    return apiErrorResponse(res, error.message, null, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+  }
+};
+
+
 module.exports = {
   login,
   loginAdmin,
-  refreshToken
+  refreshToken,
+  forgotPassword
 };

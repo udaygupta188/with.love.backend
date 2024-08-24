@@ -21,6 +21,8 @@ const userSchema = new Schema({
   following: [{ type: Schema.Types.ObjectId, ref: 'User' }],
   posts: [{ type: Schema.Types.ObjectId, ref: 'Post' }],
   comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
+  resetPasswordToken: { type: String }, // Field to store reset token
+  resetPasswordExpires: { type: Date }, // Field to store reset token expiration time
 }, { timestamps: true });
 
 const User = mongoose.model('User', userSchema);
