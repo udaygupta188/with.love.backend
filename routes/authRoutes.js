@@ -15,6 +15,10 @@ router.post('/user/register', userController.register);
 // Forgot Password route for logged-in users
 router.post('/user/forgot-password', verifyUser, authController.forgotPassword);
 
+// Route for resetting password
+router.post('/user/reset-password', authController.resetPassword);
+
+
 router.post('/test-email', sendTestEmail);
 
 

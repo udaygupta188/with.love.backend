@@ -16,7 +16,18 @@ const hashPasswords = async (users) => {
     }
 };
 
+const generateSlug = (text) => {
+    return text
+      .toString()
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9 -]/g, '') // Remove special characters
+      .replace(/\s+/g, '-') // Replace spaces with -
+      .replace(/-+$/g, ''); // Remove trailing -
+  };
+
 
 module.exports = {
-    hashPasswords
+    hashPasswords,
+    generateSlug
 };

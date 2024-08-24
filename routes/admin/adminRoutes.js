@@ -4,16 +4,20 @@ const adminController = require('../../controllers/admin/adminController');
 const validationMiddleware = require('../../middleware/validationMiddleware');
 const userSchemas = require('../../validation/userSchema');
 const categoryController = require('../../controllers/admin/categoryController');
+const brandController = require('../../controllers/admin/brandController');
+
 const { verifyAdmin } = require('../../middleware/authMiddleware');
 
 
 
 // Route to create a category
 router.get('/categories/', categoryController.getAllCategories);
+router.get('/brands/', brandController.getBrands);
+
 
 //Protected Routes
 router.use(verifyAdmin);
-// Route to create a new admin
+
 router.post('/', adminController.createAdmin);
 router.get('/details', adminController.getAdminDetails);
 
@@ -23,10 +27,18 @@ router.post(
     adminController.changePassword
 );
 
-
+//Category
 router.get('/categories/:id', categoryController.getCategoryById);
 router.delete('/categories/:id', categoryController.deleteCategory);
 router.post('/categories/create', categoryController.createCategory);
 router.put('/categories/update/:id', categoryController.updateCategory);
+
+
+//Brands
+router.post('/brand/create', brandController.createBrand);
+router.get('/brand/:id', brandController.getBrandById);
+router.put('/brand/:id', brandController.updateBrand);
+router.delete('/brand/:id', brandController.deleteBrand);
+
 
 module.exports = router;

@@ -57,4 +57,22 @@ const getProfile = async (req, res) => {
   }
 };
 
-module.exports = { register,getProfile };
+const updateProfile = async (req, res) => {
+  try {
+    const userId = req.user._id; // Get userId from authenticated user
+    const updateData = req.body;
+
+    const result = await userService.updateProfile(userId, updateData);
+
+    return apiSuccessResponse(res, result.message, result.user, HTTP_STATUS.OK);
+  } catch (error) {
+    console.error('Update Profile error:', error);
+    return apiErrorResponse(res, error.message, null, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+  }
+};
+
+module.exports = { 
+  register,
+  getProfile,
+  updateProfile
+ };

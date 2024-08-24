@@ -1,7 +1,5 @@
 const User = require("../models/userModel");
 const bcrypt = require("bcryptjs");
-const crypto = require('crypto');
-const mailTemplates = require('../templates/emailTemplates')
 
 // Service to register a new user
 const registerUser = async (userData) => {
@@ -51,34 +49,26 @@ const getUserProfile = async (userId) => {
   }
 };
 
-// Function to handle forgot password
-const forgotPassword = async (userId,resetUrl) => {
+const updateProfile = async (userId, updateData) => {
   const user = await User.findById(userId);
+
   if (!user) {
     throw new Error('User not found');
   }
 
-  // Generate a reset token (for example, using crypto)
-  const resetToken = crypto.randomBytes(32).toString('hex');
-  
-  // Store the token in the user's document with an expiration time (e.g., 1 hour)
-  user.resetPasswordToken = resetToken;
-  user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+  // Update the user's profile with the new data
+  Object.keys(updateData).forEach(key => {
+    user[key] = updateData[key];
+  });
+
   await user.save();
 
-    // Add the reset token to the reset URL
-    const fullResetUrl = `${resetUrl}/${resetToken}`;
-console.log(fullResetUrl);
-  // Send reset password email
-  await mailTemplates.sendForgotPasswordEmail(user.email, fullResetUrl);
-
-
-  return { success: true, message: 'Password reset link sent to your email.' };
+  return { message: 'Profile updated successfully', user };
 };
 
 module.exports = { 
   registerUser, 
   usernameCheck,
   getUserProfile,
-  forgotPassword
+  updateProfile
 };

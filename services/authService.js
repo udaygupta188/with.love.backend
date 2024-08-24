@@ -6,6 +6,9 @@ const Activity = require('../models/activityModel');
 const helper= require('../utils');
 const { logUserLogin } = require('../services/loginService'); 
 const { refreshTokenSecret } = require('../configs/jwt.config');
+const crypto = require('crypto');
+const { sendForgotPasswordEmail } = require('../templates/emailTemplates')
+
 
 
 const authenticateUser = async (emailOrUsername, password, country, device, IP) => {
@@ -110,9 +113,62 @@ const refreshTokens = async (refreshToken) => {
   }
 };
 
+
+
+
+// Function to handle forgot password
+const forgotPassword = async (userId,resetUrl) => {
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new Error('User not found');
+  }
+
+  // Generate a reset token (for example, using crypto)
+  const resetToken = crypto.randomBytes(32).toString('hex');
+  
+  // Store the token in the user's document with an expiration time (e.g., 1 hour)
+  user.resetPasswordToken = resetToken;
+  user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+  await user.save();
+
+    // Add the reset token to the reset URL
+    const fullResetUrl = `${resetUrl}/${resetToken}`;
+
+  // Send reset password email
+  await sendForgotPasswordEmail(user.email, fullResetUrl);
+
+
+  return { success: true, message: 'Password reset link sent to your email.' };
+};
+
+
+const resetPassword = async (token, newPassword) => {
+  const user = await User.findOne({
+    resetPasswordToken: token,
+    resetPasswordExpires: { $gt: Date.now() }
+  });
+
+  if (!user) {
+    throw new Error('Password reset token is invalid or has expired');
+  }
+
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+  user.password = hashedPassword;
+  user.resetPasswordToken = undefined;
+  user.resetPasswordExpires = undefined;
+  await user.save();
+
+  return { message: 'Password has been reset successfully' };
+};
+
+
+
 module.exports = {
   authenticateAdmin,
   generateTokens,
   refreshTokens,
-  authenticateUser
+  authenticateUser,
+  forgotPassword,
+  resetPassword
 };
