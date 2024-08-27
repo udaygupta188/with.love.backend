@@ -19,5 +19,5 @@ generalSettingSchema.pre('save',function(next){
     next();
 });
 
-const GeneralSetting = mongoose.model('GeneralSetting',generalSettingSchema);
+const GeneralSetting = mongoose.model('Setting',generalSettingSchema);
 module.exports = GeneralSetting;

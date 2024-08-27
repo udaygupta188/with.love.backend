@@ -5,9 +5,8 @@ const validationMiddleware = require('../../middleware/validationMiddleware');
 const userSchemas = require('../../validation/userSchema');
 const categoryController = require('../../controllers/admin/categoryController');
 const brandController = require('../../controllers/admin/brandController');
-
+const generalSettingController = require('../../controllers/admin/generalSettingController');
 const { verifyAdmin } = require('../../middleware/authMiddleware');
-
 
 
 // Route to create a category
@@ -15,7 +14,7 @@ router.get('/categories/', categoryController.getAllCategories);
 router.get('/brands/', brandController.getBrands);
 
 
-//Protected Routes
+//|-------------------Protected Routes------------------------|
 router.use(verifyAdmin);
 
 router.post('/', adminController.createAdmin);
@@ -39,6 +38,14 @@ router.post('/brand/create', brandController.createBrand);
 router.get('/brand/:id', brandController.getBrandById);
 router.put('/brand/:id', brandController.updateBrand);
 router.delete('/brand/:id', brandController.deleteBrand);
+
+//Settings
+router.post('/add-setting', generalSettingController.createGeneralSetting);
+router.get('/fetch-all-settings', generalSettingController.getAllGeneralSettings);
+router.get('/setting/:id', generalSettingController.getGeneralSettingById);
+router.put('/update-setting/:id', generalSettingController.updateGeneralSetting);
+router.delete('/remove-setting/:id', generalSettingController.deleteGeneralSetting);
+
 
 
 module.exports = router;
