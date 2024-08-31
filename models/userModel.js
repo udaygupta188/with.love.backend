@@ -23,6 +23,8 @@ const userSchema = new Schema({
   comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
   resetPasswordToken: { type: String }, // Field to store reset token
   resetPasswordExpires: { type: Date }, // Field to store reset token expiration time
+  profileLevel: { type: Schema.Types.ObjectId, ref: 'profileLevelModel' }, // Reference to ProfileLevel
+  points: { type: Number, default: 0 }, // Track user's points
 }, { timestamps: true });
 
 const User = mongoose.model('User', userSchema);
