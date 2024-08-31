@@ -102,15 +102,22 @@ const unfollowUser = async (req, res) => {
 const suggestUsername = async (req, res) => {
   try {
     const username = req.body.username;
-    const suggestions = await userService.suggestUsername(username);
-    res.status(200).json({ suggestions });
-  } catch (error) {
-    if (error.message === 'Base name is required for username suggestions.') {
-      return res.status(400).json({ error: error.message });
-    } else if (error.message === 'No available usernames found, try a different base name.') {
-      return res.status(404).json({ error: error.message });
+
+    if (!username) {
+      // Handle the case where the base name is not provided
+      return apiErrorResponse(res, 'Base name is required for username suggestions.', null, HTTP_STATUS.BAD_REQUEST);
     }
-    res.status(500).json({ error: 'Internal Server Error' });
+
+    const suggestions = await userService.suggestUsername(username);
+
+    if (suggestions.length === 0) {
+      // Handle the case where no suggestions are found
+      return apiErrorResponse(res, 'No available usernames found, try a different base name.', null, HTTP_STATUS.NOT_FOUND);
+    }
+
+    return apiSuccessResponse(res, 'Username suggestions retrieved successfully.', suggestions, HTTP_STATUS.OK);
+  } catch (error) {
+    return apiErrorResponse(res, 'Internal Server Error', null, HTTP_STATUS.INTERNAL_SERVER_ERROR);
   }
 };
 
