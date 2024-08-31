@@ -66,9 +66,69 @@ const updateProfile = async (userId, updateData) => {
   return { message: 'Profile updated successfully', user };
 };
 
+
+const followUser = async (userId, targetUserId) => {
+  // Convert both IDs to string before comparing
+  if (userId.toString() === targetUserId.toString()) {
+    throw new Error('You cannot follow yourself');
+  }
+
+  // Check if the target user exists and is active
+  const [user, targetUser] = await Promise.all([
+    User.findById(userId),
+    User.findById(targetUserId),
+  ]);
+
+  if (!user) {
+    throw new Error('User not found');
+  }
+
+  if (!targetUser) {
+    throw new Error('Target user not found');
+  }
+
+  if (targetUser.status !== 'active') {
+    return { message: 'User Not Found whom you want to follow' }; //Target user is not active
+  }
+
+  // Check if already following
+  if (user.following.includes(targetUserId)) {
+    return { message: 'You are already following this user', user };
+  }
+
+  // Proceed with the follow logic
+  const updatedUser = await User.findByIdAndUpdate(userId, { $addToSet: { following: targetUserId } }, { new: true });
+  await User.findByIdAndUpdate(targetUserId, { $addToSet: { followers: userId } });
+
+  return { message: 'Successfully followed the user', user: updatedUser };
+};
+
+
+
+
+const unfollowUser = async (userId, targetUserId) => {
+  console.log("loggedin:", userId);
+  console.log("To Unfollow: ", targetUserId);
+
+  if (userId.toString() === targetUserId.toString()) {
+    throw new Error('You cannot unfollow yourself');
+  }
+
+  // Remove the target user from the follower's following list
+  const user = await User.findByIdAndUpdate(userId, { $pull: { following: targetUserId } }, { new: true });
+
+  // Remove the follower from the target user's followers list
+  await User.findByIdAndUpdate(targetUserId, { $pull: { followers: userId } });
+
+  return { message: 'Successfully unfollowed the user', user };
+};
+
+
 module.exports = { 
   registerUser, 
   usernameCheck,
   getUserProfile,
-  updateProfile
+  updateProfile,
+  followUser,
+  unfollowUser
 };

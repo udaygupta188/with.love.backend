@@ -71,8 +71,37 @@ const updateProfile = async (req, res) => {
   }
 };
 
+const followUser = async (req, res)  => {
+  try {
+    const userId = req.user._id; // Get userId from authenticated user
+    const {targetUserId} = req.params;
+
+    const result = await userService.followUser(userId, targetUserId);
+
+    return apiSuccessResponse(res, result.message, result.user, HTTP_STATUS.OK);
+  } catch (error) {
+    console.log(error)
+    return apiErrorResponse(res, error.message, null, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+  }
+}
+
+const unfollowUser = async (req, res) => {
+  try {
+    const userId = req.user._id; // Assuming user ID is available in req.user from authentication middleware
+    const targetUserId = req.params.id;
+
+    const result = await userService.unfollowUser(userId, targetUserId);
+
+    return apiSuccessResponse(res, result.message, result.user, HTTP_STATUS.OK);
+  } catch (error) {
+    return apiErrorResponse(res, error.message, null, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+  }
+};
+
 module.exports = { 
   register,
   getProfile,
-  updateProfile
+  updateProfile,
+  followUser,
+  unfollowUser
  };
