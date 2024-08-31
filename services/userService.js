@@ -107,8 +107,6 @@ const followUser = async (userId, targetUserId) => {
 
 
 const unfollowUser = async (userId, targetUserId) => {
-  console.log("loggedin:", userId);
-  console.log("To Unfollow: ", targetUserId);
 
   if (userId.toString() === targetUserId.toString()) {
     throw new Error('You cannot unfollow yourself');
@@ -124,11 +122,70 @@ const unfollowUser = async (userId, targetUserId) => {
 };
 
 
+
+const suggestUsername = async (baseName) => {
+  try {
+    if (!baseName) {
+      throw new Error('Base name is required for username suggestions.');
+    }
+
+    // Validate and sanitize the base name
+    const sanitizedBaseName = baseName.trim().replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+
+    if (!sanitizedBaseName) {
+      throw new Error('Base name contains invalid characters, please provide a valid name.');
+    }
+
+    const suggestions = [];
+    const suffixes = ['_', '.', '-', '01', '123']; // Common suffixes for more readable usernames
+    const maxAttempts = 5;
+    let attempts = 0;
+
+    while (suggestions.length < maxAttempts && attempts < maxAttempts * 2) {
+      const suggestedName = generatePrettyUsername(sanitizedBaseName, suffixes, attempts);
+
+      const existingUser = await User.findOne({ username: suggestedName });
+
+      if (!existingUser) {
+        suggestions.push(suggestedName);
+      }
+
+      attempts++;
+    }
+
+    if (suggestions.length === 0) {
+      throw new Error('No available usernames found, try a different base name.');
+    }
+
+    return suggestions;
+  } catch (error) {
+    console.error('Error generating username suggestions:', error);
+    throw error;
+  }
+};
+
+// Helper function to generate more readable usernames
+const generatePrettyUsername = (baseName, suffixes, attempts) => {
+  let suggestedName = baseName;
+
+  if (attempts === 0) {
+    suggestedName = `${baseName}`;
+  } else if (attempts < suffixes.length) {
+    suggestedName = `${baseName}${suffixes[attempts]}`;
+  } else {
+    suggestedName = `${baseName}${suffixes[attempts % suffixes.length]}${Math.floor(10 + Math.random() * 90)}`;
+  }
+
+  return suggestedName;
+};
+
+
 module.exports = { 
   registerUser, 
   usernameCheck,
   getUserProfile,
   updateProfile,
   followUser,
-  unfollowUser
+  unfollowUser,
+  suggestUsername
 };
