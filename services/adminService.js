@@ -1,5 +1,5 @@
-const bcrypt = require('bcrypt');
-const Admin = require('../models/admin/adminModel');
+const bcrypt = require("bcrypt");
+const Admin = require("../models/admin/adminModel");
 
 const SALT_ROUNDS = parseInt(process.env.SALT_ROUNDS) || 10;
 
@@ -22,7 +22,7 @@ const getAdminById = async (adminId, fieldsToExclude = []) => {
     let query = Admin.findById(adminId);
 
     if (fieldsToExclude.length > 0) {
-      fieldsToExclude.forEach(field => {
+      fieldsToExclude.forEach((field) => {
         query = query.select(`-${field}`);
       });
     }
@@ -44,8 +44,28 @@ const changeAdminPassword = async (newPass, admin) => {
   }
 };
 
+const updateAdminProfile = async (adminId, updateData) => {
+  try {
+    const admin = await Admin.findById(adminId);
+
+    if (!admin) {
+      throw new Error("Admin not found");
+    }
+
+    // Update fields with the provided updateData
+    const updatedAdmin = await Admin.findByIdAndUpdate(adminId, updateData, {
+      new: true,
+    });
+
+    return updatedAdmin;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
 module.exports = {
   createAdmin,
   getAdminById,
-  changeAdminPassword
+  changeAdminPassword,
+  updateAdminProfile,
 };

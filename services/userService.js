@@ -49,7 +49,18 @@ const getUserProfile = async (userId) => {
   }
 };
 
+
 const updateProfile = async (userId, updateData) => {
+  // Check if username is being updated
+  if (updateData.username) {
+    const existingUser = await User.findOne({ username: updateData.username });
+
+    if (existingUser && existingUser._id.toString() !== userId.toString()) {
+      throw new Error('Username is already taken');
+    }
+  }
+
+  // Find the user and update their profile
   const user = await User.findById(userId);
 
   if (!user) {
@@ -65,6 +76,7 @@ const updateProfile = async (userId, updateData) => {
 
   return { message: 'Profile updated successfully', user };
 };
+
 
 
 const followUser = async (userId, targetUserId) => {

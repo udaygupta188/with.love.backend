@@ -18,7 +18,8 @@ router.get('/brands/', brandController.getBrands);
 router.use(verifyAdmin);
 
 router.post('/', adminController.createAdmin);
-router.get('/details', adminController.getAdminDetails);
+router.get('/profile', adminController.getAdminDetails);
+router.put('/update-profile', adminController.updateProfile);
 
 router.post(
     '/change-password',
