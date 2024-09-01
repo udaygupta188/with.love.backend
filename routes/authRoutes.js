@@ -19,8 +19,6 @@ router.post('/user/forgot-password', verifyUser, authController.forgotPassword);
 router.post('/user/reset-password', authController.resetPassword);
 router.get('/suggest-username', userController.suggestUsername);
 
-
-
 router.post('/test-email', sendTestEmail);
 
 
