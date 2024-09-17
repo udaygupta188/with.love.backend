@@ -39,15 +39,15 @@ const hashPasswords = async (admins) => {
 // Function to Seed Admin Data
 const seedAdmins = async () => {
   try {
-    await connectDB(); 
-    await hashPasswords(admins); 
-    await Admin.deleteMany(); 
-    const insertedAdmins = await Admin.insertMany(admins);  
+    await connectDB();
+    await hashPasswords(admins);
+    await Admin.deleteMany();
+    const insertedAdmins = await Admin.insertMany(admins);
     console.log('Admins seeded successfully');
   } catch (err) {
     console.error('Error seeding admins:', err);
   } finally {
-    mongoose.disconnect(); 
+    mongoose.disconnect();
   }
 };
 
