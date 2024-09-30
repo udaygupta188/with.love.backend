@@ -37,7 +37,7 @@ const hashPasswords = async (admins) => {
 };
 
 // Function to Seed Admin Data
-const seedAdmins = async () => {
+ const seedAdmins = async () => {
   try {
     await connectDB();
     await hashPasswords(admins);
@@ -52,4 +52,5 @@ const seedAdmins = async () => {
 };
 
 // Run the Seeder
-seedAdmins();
+// seedAdmins();
+module.exports = seedAdmins

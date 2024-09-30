@@ -1,14 +1,15 @@
 // controllers/productController.js
 const productService = require('../services/productService');
-
+const { apiSuccessResponse, apiErrorResponse, HTTP_STATUS } = require('../utils'); // Assuming you have imported the helper functions
 // Create Product
 const createProduct = async (req, res) => {
-    // console.log(req.body)
+    console.log(req.body)
   try {
     const product = await productService.createProduct(req.body);
-    res.status(201).json({ message: 'Product created successfully', product });
+    return apiSuccessResponse(res, 'Product created successfully', product, HTTP_STATUS.CREATED);
   } catch (error) {
-    res.status(500).json({ error: 'Product creation failed' });
+    return apiErrorResponse(res, 'Product creation failed', null, HTTP_STATUS.INTERNAL_SERVER_ERROR)
+    
   }
 };
 
@@ -16,9 +17,9 @@ const createProduct = async (req, res) => {
 const getAllProducts = async (req, res) => {
   try {
     const products = await productService.getAllProducts();
-    res.status(200).json(products);
+    return apiSuccessResponse(res, 'Products fetched successfully', products, HTTP_STATUS.OK);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch products' });
+    return apiErrorResponse(res, 'Failed to fetch products', null, HTTP_STATUS.INTERNAL_SERVER_ERROR)
   }
 };
 
@@ -27,11 +28,11 @@ const getProductById = async (req, res) => {
   try {
     const product = await productService.getProductById(req.params.id);
     if (!product) {
-      return res.status(404).json({ message: 'Product not found' });
+      return apiErrorResponse(res, 'Product not found', null, HTTP_STATUS.NOT_FOUND)
     }
-    res.status(200).json(product);
+    return apiSuccessResponse(res, 'Product fetched successfully', product, HTTP_STATUS.OK);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch product' });
+    return apiErrorResponse(res, 'Failed to fetch product', null, HTTP_STATUS.INTERNAL_SERVER_ERROR)
   }
 };
 
@@ -40,11 +41,11 @@ const updateProduct = async (req, res) => {
   try {
     const updatedProduct = await productService.updateProduct(req.params.id, req.body);
     if (!updatedProduct) {
-      return res.status(404).json({ message: 'Product not found' });
+      return apiErrorResponse(res, 'Product not found', null, HTTP_STATUS.NOT_FOUND)
     }
-    res.status(200).json({ message: 'Product updated successfully', updatedProduct });
+    return apiSuccessResponse(res, 'Product updated successfully', updatedProduct, HTTP_STATUS.OK);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to update product' });
+    return apiErrorResponse(res, 'Failed to update product', null, HTTP_STATUS.INTERNAL_SERVER_ERROR)
   }
 };
 
@@ -53,11 +54,14 @@ const deleteProduct = async (req, res) => {
   try {
     const deletedProduct = await productService.deleteProduct(req.params.id);
     if (!deletedProduct) {
-      return res.status(404).json({ message: 'Product not found' });
+      // return res.status(404).json({ message: 'Product not found' });
+      return apiErrorResponse(res, 'Product not found', null, HTTP_STATUS.NOT_FOUND)
     }
-    res.status(204).json({ message: 'Product deleted successfully' });
+    // res.status(204).json({ message: 'Product deleted successfully' });
+    return apiSuccessResponse(res, 'Product deleted successfully', null, 204);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to delete product' });
+    // res.status(500).json({ error: 'Failed to delete product' });
+    return apiErrorResponse(res, 'Failed to delete product', null, HTTP_STATUS.INTERNAL_SERVER_ERROR)
   }
 };
 

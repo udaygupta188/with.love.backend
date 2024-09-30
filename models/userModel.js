@@ -15,7 +15,7 @@ const userSchema = new Schema({
   refreshToken: { type: String },
   blocked: { type: Boolean, default: false },
   joined: { type: Date, default: Date.now },
-  role: { type: String, enum: ['user', 'creator', 'admin'], default: 'user' },
+  role: { type: String, enum: ['user', 'curator', 'admin','brand'], default: 'user' },
   profile_completeness: { type: Number, default: 0 },
   followers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
   following: [{ type: Schema.Types.ObjectId, ref: 'User' }],
@@ -25,6 +25,7 @@ const userSchema = new Schema({
   resetPasswordExpires: { type: Date }, // Field to store reset token expiration time
   profileLevel: { type: Schema.Types.ObjectId, ref: 'profileLevelModel' }, // Reference to ProfileLevel
   points: { type: Number, default: 0 }, // Track user's points
+  socialmedia: [{ type: Schema.Types.ObjectId, ref: "SocialMedia" }]
 }, { timestamps: true });
 
 const User = mongoose.model('User', userSchema);

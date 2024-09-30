@@ -20,7 +20,10 @@ const createBrand = async (brandData) => {
         description: brandData.description,
         logo: brandData.logo,
         status: brandData.status,
-        seo: brandData.seo
+        seo: brandData.seo,
+        status:brandData.status,
+        createdBy:brandData.creatorById,
+        createdByModel:brandData.createdByModel
       });
   
       const savedBrand = await brand.save();

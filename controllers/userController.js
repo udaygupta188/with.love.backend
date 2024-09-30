@@ -1,3 +1,4 @@
+const BrandCuratorInteraction = require('../models/BrandCuratorInteractionModel');
 const userService = require('../services/userService');
 const { apiSuccessResponse, apiErrorResponse, HTTP_STATUS } = require('../utils'); // Importing All helper functions
 
@@ -71,10 +72,10 @@ const updateProfile = async (req, res) => {
   }
 };
 
-const followUser = async (req, res)  => {
+const followUser = async (req, res) => {
   try {
     const userId = req.user._id; // Get userId from authenticated user
-    const {targetUserId} = req.params;
+    const { targetUserId } = req.params;
 
     const result = await userService.followUser(userId, targetUserId);
 
@@ -121,11 +122,56 @@ const suggestUsername = async (req, res) => {
   }
 };
 
-module.exports = { 
+const becomeCurator = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { platform, socialId, followers } = req.body;
+
+    // let data = {
+    //   userId: userId,
+    //   platForm: platform,
+    //   socialId:socialId,
+    //   followers:followers
+    // }
+    if (!userId) {
+
+      return apiErrorResponse(res, 'User not logged-in.', null, HTTP_STATUS.UNAUTHORIZED);
+    }
+    const socialMedia = await userService.becomeCurator(userId, platform, socialId, followers)
+
+    if (!socialMedia.status) {
+      return apiErrorResponse(res, 'Instagram account not found for this user.', null, HTTP_STATUS.NOT_FOUND);
+    }
+    if (socialMedia.status) {
+
+      return apiSuccessResponse(res, socialMedia.message, socialMedia.user, HTTP_STATUS.OK);
+    }
+
+
+  } catch (error) {
+    console.error(error);
+    return apiErrorResponse(res, 'Server error.', null, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+  }
+}
+const brandInteractions = async(req, res) =>{
+  try {
+    const curatorId = req.user._id; // Assuming the curator is logged in
+    const interactions = await BrandCuratorInteraction
+      .find({ curator: curatorId })
+      .populate('brand', 'name logo') // Populate brand details
+      .sort({ reachedAt: -1 }); // Sort by date (newest first)
+      await apiSuccessResponse(res, "", interactions,200 )
+  } catch (error) {
+    
+  }
+}
+module.exports = {
   register,
   getProfile,
   updateProfile,
   followUser,
   unfollowUser,
-  suggestUsername
- };
+  suggestUsername,
+  becomeCurator,
+  brandInteractions
+};

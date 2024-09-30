@@ -1,3 +1,4 @@
+const SocialMedia = require("../models/socialMediaModel");
 const User = require("../models/userModel");
 const bcrypt = require("bcryptjs");
 
@@ -70,8 +71,9 @@ const updateProfile = async (userId, updateData) => {
   // Update the user's profile with the new data
   Object.keys(updateData).forEach(key => {
     user[key] = updateData[key];
+    console.log(updateData[key], user[key])
   });
-
+  console.log(user, updateData)
   await user.save();
 
   return { message: 'Profile updated successfully', user };
@@ -191,13 +193,30 @@ const generatePrettyUsername = (baseName, suffixes, attempts) => {
   return suggestedName;
 };
 
+const becomeCurator = async (userId, platform, socialId, followers) => {
 
-module.exports = { 
-  registerUser, 
+  const socialMedia = await SocialMedia.findOne({ user: userId, platform: platform });
+  if (socialMedia) {
+    socialMedia.socialId = socialId;
+    socialMedia.followers = followers;
+    await socialMedia.save();
+  }
+  if (socialMedia?.followers >= 1000) {
+    await User.findByIdAndUpdate(userId, { role: 'curator' }, { new: true }); // Update the user's role to curator
+    return { status: true, message: 'You are now a curator!' }
+  } else {
+    return { status: false, message: 'You need at least 1000 followers to become a curator.' };
+  }
+
+}
+
+module.exports = {
+  registerUser,
   usernameCheck,
   getUserProfile,
   updateProfile,
   followUser,
   unfollowUser,
-  suggestUsername
+  suggestUsername,
+  becomeCurator
 };

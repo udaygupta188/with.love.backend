@@ -6,6 +6,7 @@ require('dotenv').config();
 const connectDB = require("./configs/db.config");
 const routes = require('./routes/index');
 const errorHandlerMiddleware = require('./middleware/errorHandlerMiddleware');
+const seedAdmins = require("./seed/adminSeeder");
 
 //Express Server Setup
 const app = express();
@@ -26,7 +27,7 @@ app.use('/static', express.static(path.join(__dirname, 'static')));
 // Connection URL
 //Please dont pass anythign from here its auto config from .env file in db config file
 connectDB();
-
+// seedAdmins()
 //Server status endpoint
 app.get('/', (req, res) => {
     res.send('Server is Up!');

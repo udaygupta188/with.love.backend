@@ -107,6 +107,11 @@ const countrySchema = yup.object().shape({
     status: yup.string().trim().oneOf(['active', 'inactive'], 'Invalid status').default('active'),
 });
 
+const socialMediaSchema = yup.object().shape({
+    platForm: yup.string().trim().required("Platform is required"),
+    socialId:yup.string().trim().required("Social Id is required"),
+    followers:yup.number().min(0)
+})
 module.exports = {
     resetPasswordSchema,
     createUserSchema,
@@ -116,4 +121,5 @@ module.exports = {
     downloadQuerySchema,
     addDeviceSchema,
     countrySchema,
+    socialMediaSchema
 };
