@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const { apiErrorResponse, HTTP_STATUS } = require('./responseHelper');
 const SALT_ROUNDS = parseInt(process.env.SALT_ROUNDS) || 10; // Default to 10 if SALT_ROUNDS is not defined
 
 
@@ -18,16 +19,31 @@ const hashPasswords = async (users) => {
 
 const generateSlug = (text) => {
     return text
-      .toString()
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9 -]/g, '') // Remove special characters
-      .replace(/\s+/g, '-') // Replace spaces with -
-      .replace(/-+$/g, ''); // Remove trailing -
-  };
+        .toString()
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9 -]/g, '') // Remove special characters
+        .replace(/\s+/g, '-') // Replace spaces with -
+        .replace(/-+$/g, ''); // Remove trailing -
+};
 
+const checkFollowers = (req, res, next) => {
+    try {
+        
+        if (10000 > req.body.followers) {
+            console.log("first enough followers")
+            return apiErrorResponse(res, "Followers is not enough", null, HTTP_STATUS.FORBIDDEN); 
+        }
+        next()
+    } catch (error) {
+        return apiErrorResponse(res, "Followers is not enough", error.message, HTTP_STATUS.FORBIDDEN);
+
+    }
+
+}
 
 module.exports = {
     hashPasswords,
-    generateSlug
+    generateSlug,
+    checkFollowers
 };

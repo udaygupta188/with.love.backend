@@ -6,7 +6,9 @@ const userSchemas = require('../../validation/userSchema');
 const categoryController = require('../../controllers/admin/categoryController');
 const brandController = require('../../controllers/admin/brandController');
 const generalSettingController = require('../../controllers/admin/generalSettingController');
+const roleController = require('../../controllers/admin/roleController');
 const { verifyAdmin } = require('../../middleware/authMiddleware');
+const { roleSchema } = require('../../validation/roleValidation');
 
 
 // Route to create a category
@@ -47,6 +49,11 @@ router.get('/setting/:id', generalSettingController.getGeneralSettingById);
 router.put('/update-setting/:id', generalSettingController.updateGeneralSetting);
 router.delete('/remove-setting/:id', generalSettingController.deleteGeneralSetting);
 
-
+//roles
+router.post('/add-role',validationMiddleware.validateRequest(roleSchema),roleController.createRole);
+router.put('/update-role/:id',roleController.updateRole);
+router.get('/fetch-all-role',roleController.getAllRoles);
+router.get('/role/:id',roleController.getRoleById);
+router.delete('/role/:id',roleController.deleteRole);
 
 module.exports = router;

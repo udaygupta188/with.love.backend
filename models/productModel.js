@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { Schema } = require('yup');
 
 const productSchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -35,6 +36,7 @@ const productSchema = new mongoose.Schema({
     width: Number,
     height: Number,
   },
+  styleRecommendations:{type:mongoose.Schema.Types.ObjectId, ref:"HowToStyle"},
   createdAt: { type: Date, default: Date.now },
 });
 

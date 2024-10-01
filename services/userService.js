@@ -1,6 +1,9 @@
+const { RolesAnywhere } = require("aws-sdk");
 const SocialMedia = require("../models/socialMediaModel");
 const User = require("../models/userModel");
+const Role = require('../models/admin/roleModel.js')
 const bcrypt = require("bcryptjs");
+const { default: mongoose } = require("mongoose");
 
 // Service to register a new user
 const registerUser = async (userData) => {
@@ -194,21 +197,70 @@ const generatePrettyUsername = (baseName, suffixes, attempts) => {
 };
 
 const becomeCurator = async (userId, platform, socialId, followers) => {
+  try {
+    const curator = await Role.findOne({ name: "curator" });
+    // Step 1: Check if the social media entry exists for the user and platform
+    let socialMedia = await SocialMedia.findOne({ user: userId, platform: platform });
 
-  const socialMedia = await SocialMedia.findOne({ user: userId, platform: platform });
-  if (socialMedia) {
-    socialMedia.socialId = socialId;
-    socialMedia.followers = followers;
-    await socialMedia.save();
-  }
-  if (socialMedia?.followers >= 1000) {
-    await User.findByIdAndUpdate(userId, { role: 'curator' }, { new: true }); // Update the user's role to curator
-    return { status: true, message: 'You are now a curator!' }
-  } else {
-    return { status: false, message: 'You need at least 1000 followers to become a curator.' };
-  }
+    // Step 2: If no social media entry exists, create a new one
+    if (!socialMedia) {
+      socialMedia = new SocialMedia({
+        user: userId,
+        platform,
+        socialId,
+        followers
+      });
+      await socialMedia.save();
+    } else {
+      // Step 3: If social media exists, update the followers and socialId if needed
+      socialMedia.socialId = socialId;
+      socialMedia.followers = followers;
+      await socialMedia.save();
+    }
 
+    // Step 4: Check if the user has enough followers to become a curator
+    if (socialMedia.followers >= 10000) {
+
+      await User.findByIdAndUpdate(userId, { role: curator._id }, { new: true }); // Update the user's role to curator
+      return { status: true, message: 'You are now a curator!' };
+    } else {
+      return { status: false, message: 'You need at least 10000 followers to become a curator.' };
+    }
+  } catch (err) {
+    return { status: false, message: err.message };
+  }
 }
+
+const addSocialMedia = async (requestedData) => {
+  try {
+    const { userId, platform, socialId, followers } = requestedData;
+    console.log(userId, platform, socialId, followers)
+    // Create a new SocialMedia record
+    if (
+      !userId || !platform || !socialId || !followers
+    ) {
+      return { status: false, message: "User, platform, socialId and followers are required" }
+    }
+
+    const result = new SocialMedia({
+      platform,
+      user: userId,
+      socialId,
+      followers,
+    });
+
+    await result.save();
+
+    return {
+      status: true,
+      message: "Social Detail added",
+      social: result
+    };
+  } catch (err) {
+    return { status: false, message: err.message };
+  }
+}
+
 
 module.exports = {
   registerUser,
@@ -218,5 +270,6 @@ module.exports = {
   followUser,
   unfollowUser,
   suggestUsername,
-  becomeCurator
+  becomeCurator,
+  addSocialMedia
 };

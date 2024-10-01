@@ -4,11 +4,11 @@ const { apiSuccessResponse, apiErrorResponse, HTTP_STATUS } = require('../utils'
 
 const register = async (req, res) => {
   try {
-    const { name, email, username, password, profile_avatar, phone, address, date_of_birth, gender } = req.body;
+    const { name, email, username, password,role, profile_avatar, phone, address, date_of_birth, gender } = req.body;
 
     // Validate input
-    if (!name || !email || !username || !password) {
-      return apiErrorResponse(res, 'Name, email, username, and password are required.', null, HTTP_STATUS.BAD_REQUEST);
+    if (!name || !email || !username || !password ||!role) {
+      return apiErrorResponse(res, 'Name, email, username,  password and role are required.', null, HTTP_STATUS.BAD_REQUEST);
     }
 
     // Check if username already exists
@@ -27,7 +27,8 @@ const register = async (req, res) => {
       phone,
       address,
       date_of_birth,
-      gender
+      gender,
+      role
     });
 
     if (result.success) {
@@ -134,16 +135,17 @@ const becomeCurator = async (req, res) => {
     //   followers:followers
     // }
     if (!userId) {
-
       return apiErrorResponse(res, 'User not logged-in.', null, HTTP_STATUS.UNAUTHORIZED);
+    }
+    if(!socialId || !platform || !followers){
+      return apiErrorResponse(res, "Socail-Id, platforma and followers are required!")
     }
     const socialMedia = await userService.becomeCurator(userId, platform, socialId, followers)
 
     if (!socialMedia.status) {
-      return apiErrorResponse(res, 'Instagram account not found for this user.', null, HTTP_STATUS.NOT_FOUND);
+      return apiErrorResponse(res, 'Instagram account not found for this user.', socialMedia.message, HTTP_STATUS.NOT_FOUND);
     }
     if (socialMedia.status) {
-
       return apiSuccessResponse(res, socialMedia.message, socialMedia.user, HTTP_STATUS.OK);
     }
 
@@ -160,9 +162,21 @@ const brandInteractions = async(req, res) =>{
       .find({ curator: curatorId })
       .populate('brand', 'name logo') // Populate brand details
       .sort({ reachedAt: -1 }); // Sort by date (newest first)
-      await apiSuccessResponse(res, "", interactions,200 )
+     return await apiSuccessResponse(res, "", interactions,HTTP_STATUS.OK);
   } catch (error) {
-    
+    return apiErrorResponse(res, 'Internal Server Error', null, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+  }
+}
+
+const addSocialMedia = async(req, res)=>{
+  try {
+    const result = await userService.addSocialMedia(req.body);
+    if(!result.status){
+      return apiErrorResponse(res, result.message, null, HTTP_STATUS.BAD_REQUEST);
+    }
+    return apiSuccessResponse(res, "Socail saved successfully", result.social, HTTP_STATUS.OK)
+  } catch (error) {
+    return apiErrorResponse(res, 'Server error.', null, HTTP_STATUS.INTERNAL_SERVER_ERROR);
   }
 }
 module.exports = {
@@ -173,5 +187,6 @@ module.exports = {
   unfollowUser,
   suggestUsername,
   becomeCurator,
-  brandInteractions
+  brandInteractions,
+  addSocialMedia
 };
