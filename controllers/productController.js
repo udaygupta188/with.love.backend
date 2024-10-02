@@ -65,10 +65,20 @@ const deleteProduct = async (req, res) => {
   }
 };
 
+const addStyleRecommendation = async(req, res)=>{
+  try {
+    const styleRecommendation =await productService.addStyleRecommendation(req.body);
+    return apiSuccessResponse(res, "Style product added successfully", styleRecommendation, HTTP_STATUS.OK)
+  } catch (error) {
+    return apiErrorResponse(res, 'Failed to add style recommended product', error.message, HTTP_STATUS.INTERNAL_SERVER_ERROR)
+  }
+}
+
 module.exports = {
     createProduct,
     getAllProducts,
     getProductById,
     updateProduct,
-    deleteProduct
+    deleteProduct,
+    addStyleRecommendation
 }

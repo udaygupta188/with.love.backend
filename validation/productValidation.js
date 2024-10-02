@@ -8,6 +8,11 @@ const productSchema = yup.object({
   influencer: yup.string().required('Influencer is required'),
 });
 
+const styleProductSchema = yup.object({
+  productId:yup.string().required('Product is required'),
+  styleProducts:yup.array().required('Style products id are required')
+
+})
 // Validation middleware
 const validateProduct = async (req, res, next) => {
   try {
@@ -20,4 +25,4 @@ const validateProduct = async (req, res, next) => {
   }
 };
 
-module.exports = validateProduct;
+module.exports ={ validateProduct, styleProductSchema}

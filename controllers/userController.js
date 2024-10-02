@@ -128,12 +128,6 @@ const becomeCurator = async (req, res) => {
     const userId = req.user.id;
     const { platform, socialId, followers } = req.body;
 
-    // let data = {
-    //   userId: userId,
-    //   platForm: platform,
-    //   socialId:socialId,
-    //   followers:followers
-    // }
     if (!userId) {
       return apiErrorResponse(res, 'User not logged-in.', null, HTTP_STATUS.UNAUTHORIZED);
     }

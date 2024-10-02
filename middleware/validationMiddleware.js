@@ -10,6 +10,7 @@ const formatYupError = (error) => {
 
 const validateRequest = (schema) => async (req, res, next) => {
   try {
+    console.log(req.body)
     await schema.validate(req.body, { abortEarly: false, stripUnknown: false });
     next();
   } catch (error) {

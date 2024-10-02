@@ -4,6 +4,7 @@ const User = require("../models/userModel");
 const Role = require('../models/admin/roleModel.js')
 const bcrypt = require("bcryptjs");
 const { default: mongoose } = require("mongoose");
+const Influencer = require("../models/influencerModel.js");
 
 // Service to register a new user
 const registerUser = async (userData) => {
@@ -220,8 +221,15 @@ const becomeCurator = async (userId, platform, socialId, followers) => {
 
     // Step 4: Check if the user has enough followers to become a curator
     if (socialMedia.followers >= 10000) {
-
+      let influencer = await Influencer.findOne({ userId: userId })
+      if (influencer) {
+        return { status: false, message: "You are already curator!" }
+      }
       await User.findByIdAndUpdate(userId, { role: curator._id }, { new: true }); // Update the user's role to curator
+      const newInfluencer = new Influencer({
+        userId
+      });
+      await newInfluencer.save();
       return { status: true, message: 'You are now a curator!' };
     } else {
       return { status: false, message: 'You need at least 10000 followers to become a curator.' };

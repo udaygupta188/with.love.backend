@@ -21,8 +21,7 @@ const createBrand = async (brandData) => {
         logo: brandData.logo,
         status: brandData.status,
         seo: brandData.seo,
-        status:brandData.status,
-        createdBy:brandData.creatorById,
+        createdBy:brandData.createdBy,
         createdByModel:brandData.createdByModel
       });
   
