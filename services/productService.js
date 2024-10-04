@@ -9,8 +9,8 @@ exports.createProduct = async (data) => {
 };
 
 // Get All Products
-exports.getAllProducts = async () => {
-  return await Product.find().populate('brand influencer categories');
+exports.getAllProducts = async (filter, sortBy) => {
+  return await Product.find(filter).populate('brand influencer categories').sort(sortBy ? { [sortBy]: 1 } : {});;
 };
 
 // Get Product by ID

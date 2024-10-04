@@ -3,20 +3,32 @@ const productService = require('../services/productService');
 const { apiSuccessResponse, apiErrorResponse, HTTP_STATUS } = require('../utils'); // Assuming you have imported the helper functions
 // Create Product
 const createProduct = async (req, res) => {
-    console.log(req.body)
   try {
     const product = await productService.createProduct(req.body);
     return apiSuccessResponse(res, 'Product created successfully', product, HTTP_STATUS.CREATED);
   } catch (error) {
     return apiErrorResponse(res, 'Product creation failed', null, HTTP_STATUS.INTERNAL_SERVER_ERROR)
-    
   }
 };
 
 // Get All Products
 const getAllProducts = async (req, res) => {
   try {
-    const products = await productService.getAllProducts();
+    const { priceMin, priceMax, brand, sortBy , status} = req.query;
+    let filter ={};
+    if(status){
+      filter.status = status;
+    }
+    if (priceMin) {
+      filter.price = { $gte: parseFloat(priceMin) }; // Greater than or equal to priceMin
+    }
+    if (priceMax) {
+      filter.price = { ...filter.price, $lte: parseFloat(priceMax) }; // Less than or equal to priceMax
+    }
+    if (brand) {
+      filter.brand = brand; // Assuming brand is an ID
+    }
+    const products = await productService.getAllProducts(filter, sortBy);
     return apiSuccessResponse(res, 'Products fetched successfully', products, HTTP_STATUS.OK);
   } catch (error) {
     return apiErrorResponse(res, 'Failed to fetch products', null, HTTP_STATUS.INTERNAL_SERVER_ERROR)
@@ -65,9 +77,9 @@ const deleteProduct = async (req, res) => {
   }
 };
 
-const addStyleRecommendation = async(req, res)=>{
+const addStyleRecommendation = async (req, res) => {
   try {
-    const styleRecommendation =await productService.addStyleRecommendation(req.body);
+    const styleRecommendation = await productService.addStyleRecommendation(req.body);
     return apiSuccessResponse(res, "Style product added successfully", styleRecommendation, HTTP_STATUS.OK)
   } catch (error) {
     return apiErrorResponse(res, 'Failed to add style recommended product', error.message, HTTP_STATUS.INTERNAL_SERVER_ERROR)
@@ -75,10 +87,10 @@ const addStyleRecommendation = async(req, res)=>{
 }
 
 module.exports = {
-    createProduct,
-    getAllProducts,
-    getProductById,
-    updateProduct,
-    deleteProduct,
-    addStyleRecommendation
+  createProduct,
+  getAllProducts,
+  getProductById,
+  updateProduct,
+  deleteProduct,
+  addStyleRecommendation
 }
