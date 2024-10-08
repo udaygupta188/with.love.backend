@@ -18,5 +18,8 @@ router.put('/products/:id',  productController.updateProduct);
 // Delete Product
 router.delete('/products/:id', productController.deleteProduct);
 
+// Search Product
+
+
 router.post('/add-style-recommendation',  validationMiddleware.validateRequest(styleProductSchema), productController.addStyleRecommendation);
 module.exports = router;

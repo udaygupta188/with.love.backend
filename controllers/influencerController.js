@@ -54,7 +54,7 @@ const addBrand = async (req, res) => {
             return apiErrorResponse(res, "Failed to update influencer with new brand", null, HTTP_STATUS.INTERNAL_SERVER_ERROR);
         }
 
-                // Success response
+        // Success response
         return apiSuccessResponse(res, "Brand added successfully", brand, HTTP_STATUS.OK);
     } catch (error) {
         return apiErrorResponse(res, "Internal server:", error.message, HTTP_STATUS.INTERNAL_SERVER_ERROR);

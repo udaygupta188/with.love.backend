@@ -14,7 +14,7 @@ const createProduct = async (req, res) => {
 // Get All Products
 const getAllProducts = async (req, res) => {
   try {
-    const { priceMin, priceMax, brand, sortBy , status} = req.query;
+    const {search, priceMin, priceMax, brand, sortBy , status, category} = req.query;
     let filter ={};
     if(status){
       filter.status = status;
@@ -27,6 +27,16 @@ const getAllProducts = async (req, res) => {
     }
     if (brand) {
       filter.brand = brand; // Assuming brand is an ID
+    }
+    if(category){
+      filter.categories = { $in: Array.isArray(category) ? category : [category] }; 
+     
+    }
+    if (search) {
+      filter.$or = [
+        { name: { $regex: search, $options: 'i' } },  // case-insensitive search
+        { description: { $regex: search, $options: 'i' } }
+      ];
     }
     const products = await productService.getAllProducts(filter, sortBy);
     return apiSuccessResponse(res, 'Products fetched successfully', products, HTTP_STATUS.OK);
