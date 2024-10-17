@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const connectDB = require('../configs/db.config');
-const Admin = require('../models/admin/adminModel');
+const Admin = require('../modules/admin/adminProfile/model');
+
 
 const admins = [
   {

@@ -4,7 +4,7 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 require('dotenv').config();
 const connectDB = require("./configs/db.config");
-const routes = require('./routes/index');
+const routes = require('./modules/index');
 const errorHandlerMiddleware = require('./middleware/errorHandlerMiddleware');
 const seedAdmins = require("./seed/adminSeeder");
 

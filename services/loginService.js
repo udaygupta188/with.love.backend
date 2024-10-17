@@ -1,4 +1,5 @@
-const Login = require('../models/loginModel'); // Adjust the path as needed
+const { Login } = require("../modules/auth/model");
+
 
 const logUserLogin = async (email, userId, country, device, IP) => {
   try {

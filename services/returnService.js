@@ -1,4 +1,4 @@
-const Return = require('../models/returnModel');
+const { Return } = require('../models/orderManagementModel');
 const Order = require('../models/orderModel')
 const createReturnRequest = async (orderId, returnReason) => {
     try {
@@ -26,9 +26,18 @@ const createReturnRequest = async (orderId, returnReason) => {
     }
 };
 const getAllReturns = async (data) => {
+    try {
+        const returns = await Return.find().populate('orderId')
+        if (!returns.length) {
+            throw new Error("No return list found")
+        }
+        return returns;
 
+    } catch (error) {
+        throw new Error(error.message);
+    }
 };
-const getReturnById = async (returnId   ) => {
+const getReturnById = async (returnId) => {
     try {
         const returnRequest = await Return.findById(returnId).populate('orderId');
         if (!returnRequest) {
@@ -40,7 +49,7 @@ const getReturnById = async (returnId   ) => {
         throw new Error(error.message);
     }
 };
-const getReturnsByOrderId = async(orderId)=>{
+const getReturnsByOrderId = async (orderId) => {
     try {
         const returnRequests = await Return.find({ orderId }).populate('orderId');
         return returnRequests;
@@ -85,4 +94,4 @@ module.exports = {
     getReturnById,
     getReturnsByOrderId,
     updateReturnStatus,
-    };
+};
