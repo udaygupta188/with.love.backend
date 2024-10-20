@@ -1,4 +1,4 @@
-const { Login } = require("../modules/auth/model");
+const { Login } = require("../modules/auth/auth.model");
 
 
 const logUserLogin = async (email, userId, country, device, IP) => {

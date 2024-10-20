@@ -2,9 +2,9 @@ const express = require('express');
 const router = express.Router();
 const adminRoutes = require('./admin/index');
 const userRoutes = require('./user/index');
-const authRoutes = require('./auth/route')
-const influencerRoutes = require('./influencer/route');
-const publicRoutes = require('./public/route');
+const authRoutes = require('./auth/auth.route')
+const influencerRoutes = require('./influencer/influencer.route');
+const publicRoutes = require('./public/public.route');
 
 //admin
 router.use(adminRoutes)

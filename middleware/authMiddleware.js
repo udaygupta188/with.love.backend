@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const { accessTokenSecret, refreshTokenSecret } = require('../configs/jwt.config');
-const { User } = require('../modules/user/userProfile/model');
-const Admin = require('../modules/admin/adminProfile/model');
+const { User } = require('../modules/user/userProfile/userProfile.model');
+const Admin = require('../modules/admin/adminProfile/adminProfile.model');
 
 // Middleware to verify user
 const verifyUser = async (req, res, next) => {

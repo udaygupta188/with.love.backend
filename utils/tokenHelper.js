@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const Admin = require('../modules/admin/adminProfile/model');
+const Admin = require('../modules/admin/adminProfile/adminProfile.model');
 
 const {
   accessTokenSecret,
