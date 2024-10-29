@@ -1,13 +1,19 @@
 const BrandCuratorInteraction = require('../../../models/BrandCuratorInteractionModel');
 const userService = require('./userProfile.service');
+const brandService = require('../../admin/brand/brand.service')
 const { apiSuccessResponse, apiErrorResponse, HTTP_STATUS } = require('../../../utils'); // Importing All helper functions
+const Role = require('../../admin/role/role.model');
+const Brand = require('../../admin/brand/brand.model');
+const Requests = require('../../admin/requests/requests.model');
 
 const register = async (req, res) => {
   try {
-    const { name, email, username, password,role, profile_avatar, phone, address, date_of_birth, gender } = req.body;
+    const brandRole = await Role.findOne({ name: 'Brand' });
+    console.log(brandRole)
+    const { name, email, username, password, role, profile_avatar, phone, address, date_of_birth, gender, description, logo } = req.body;
 
     // Validate input
-    if (!name || !email || !username || !password ||!role) {
+    if (!name || !email || !username || !password || !role) {
       return apiErrorResponse(res, 'Name, email, username,  password and role are required.', null, HTTP_STATUS.BAD_REQUEST);
     }
 
@@ -16,7 +22,7 @@ const register = async (req, res) => {
     if (usernameCheck.exists) {
       return apiErrorResponse(res, 'Username already exists.', null, HTTP_STATUS.BAD_REQUEST);
     }
-
+console.log(role , brandRole._id )
     // Call service to register user
     const result = await userService.registerUser({
       name,
@@ -28,9 +34,27 @@ const register = async (req, res) => {
       address,
       date_of_birth,
       gender,
-      role
+      role,
+      status: role === brandRole._id ? 'inactive' : 'active'
     });
+    if (role === brandRole._id) {
 
+      const brand = new Brand({
+        name: name,
+        description: description,
+        logo: logo,
+        status: 'inactive',
+        createdBy: result.user._id,
+        createdByModel: 'User'
+      });
+      await brand.save();
+      const newRequest = new Requests({
+        brandId: brand?._id,
+        userId: result.user._id,
+      })
+      await newRequest.save();
+
+    }
     if (result.success) {
       return apiSuccessResponse(res, 'User registered successfully', result.user, HTTP_STATUS.CREATED);
     } else {
@@ -132,7 +156,7 @@ const becomeCurator = async (req, res) => {
     if (!userId) {
       return apiErrorResponse(res, 'User not logged-in.', null, HTTP_STATUS.UNAUTHORIZED);
     }
-    if(!socialId || !platform || !followers){
+    if (!socialId || !platform || !followers) {
       return apiErrorResponse(res, "Socail-Id, platforma and followers are required!")
     }
     const socialMedia = await userService.becomeCurator(userId, platform, socialId, followers)
@@ -150,28 +174,54 @@ const becomeCurator = async (req, res) => {
     return apiErrorResponse(res, 'Server error.', null, HTTP_STATUS.INTERNAL_SERVER_ERROR);
   }
 }
-const brandInteractions = async(req, res) =>{
+const brandInteractions = async (req, res) => {
   try {
     const curatorId = req.user._id; // Assuming the curator is logged in
     const interactions = await BrandCuratorInteraction
       .find({ curator: curatorId })
       .populate('brand', 'name logo') // Populate brand details
       .sort({ reachedAt: -1 }); // Sort by date (newest first)
-     return await apiSuccessResponse(res, "", interactions,HTTP_STATUS.OK);
+    return await apiSuccessResponse(res, "", interactions, HTTP_STATUS.OK);
   } catch (error) {
     return apiErrorResponse(res, 'Internal Server Error', null, HTTP_STATUS.INTERNAL_SERVER_ERROR);
   }
 }
 
-const addSocialMedia = async(req, res)=>{
+const addSocialMedia = async (req, res) => {
   try {
     const result = await userService.addSocialMedia(req.body);
-    if(!result.status){
+    if (!result.status) {
       return apiErrorResponse(res, result.message, null, HTTP_STATUS.BAD_REQUEST);
     }
     return apiSuccessResponse(res, "Socail saved successfully", result.social, HTTP_STATUS.OK)
   } catch (error) {
     return apiErrorResponse(res, 'Server error.', null, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+  }
+}
+
+const getFollowers = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const followers = await userService.getFollowers(userId)
+    if(!followers.data.length){
+      return apiErrorResponse(res, 'No Followers found', null, HTTP_STATUS.BAD_REQUEST)
+    }
+    return apiSuccessResponse(res, 'Fetched successfully followers', followers, HTTP_STATUS.OK)
+  } catch (error) {
+    return apiErrorResponse(res, 'Error Occured', error.message, HTTP_STATUS.INTERNAL_SERVER_ERROR)
+  }
+}
+
+const getFollowing = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const following = await userService.getFollowing(userId)
+    if(!following.data.length){
+      return apiErrorResponse(res, 'No Following found', null, HTTP_STATUS.BAD_REQUEST)
+    }
+    return apiSuccessResponse(res, 'Fetched successfuly following', following, HTTP_STATUS.OK);
+  } catch (error) {
+    return apiErrorResponse(res, 'Error Occured', error.message, HTTP_STATUS.INTERNAL_SERVER_ERROR)
   }
 }
 module.exports = {
@@ -183,5 +233,7 @@ module.exports = {
   suggestUsername,
   becomeCurator,
   brandInteractions,
-  addSocialMedia
+  addSocialMedia,
+  getFollowers,
+  getFollowing
 };

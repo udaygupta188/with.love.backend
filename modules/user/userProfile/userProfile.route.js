@@ -13,7 +13,8 @@ router.post('/unfollow/:id', verifyUser, userController.unfollowUser);
 router.post("/become-curator", verifyUser,checkFollowers, userController.becomeCurator);
 router.get('/brand-interactions',validateSocialDetail, verifyUser, userController.brandInteractions);
 router.post('/add-social-detail',validateSocialDetail, verifyUser, userController.addSocialMedia)
-
+router.get('/user/:userId/view-followers', userController.getFollowers)
+router.get('/user/:userId/view-following', userController.getFollowing)
 
 
 

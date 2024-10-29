@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const authController = require('./auth.controller');
 const userController = require('../user/userProfile/userProfile.controller');
+const brandController = require('../user/brand/brand.controller')
 const { sendTestEmail } = require('../../controllers/emailController');
 const {verifyUser} = require('../../middleware/authMiddleware');
 

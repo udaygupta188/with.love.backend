@@ -1,12 +1,8 @@
 const express = require('express');
 const router = express.Router();
+const brandController = require('./brand.controller')
 
-router.get('/brand', (req, res) => {
-    try {
-        return res.status(200).json({msg:"working"})
-    } catch (error) {
-        return res.status(500).json({msg:"Some went wrong"})
-    }
- });
+router.get('/brand/user-create-brand',brandController.createBrand);
+ router.get('/brands/:brandId/other-products',brandController.brandsProduct)
 
 module.exports = router

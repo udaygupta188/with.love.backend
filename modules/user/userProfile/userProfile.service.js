@@ -1,6 +1,6 @@
 const { RolesAnywhere } = require("aws-sdk");
 const SocialMedia = require("../../../models/socialMediaModel");
-const User = require("./userProfile.model.js");
+const { User } = require("./userProfile.model.js");
 const Role = require('../../admin/role/role.model.js')
 const bcrypt = require("bcryptjs");
 const { default: mongoose } = require("mongoose");
@@ -270,6 +270,24 @@ const addSocialMedia = async (requestedData) => {
 }
 
 
+const getFollowers = async (userId) => {
+  try {
+    const result = await User.findById(userId).populate('followers', 'username');
+    return { status: true, data: result }
+  } catch (error) {
+    return { status: false, message: error.message };
+  }
+}
+
+const getFollowing = async (userId) => {
+  try {
+    const result = await User.findById(userId).populate('following', 'username');
+    return { status: true, data: result }
+  } catch (error) {
+    return { status: false, message: error.message };
+  }
+}
+
 module.exports = {
   registerUser,
   usernameCheck,
@@ -279,5 +297,7 @@ module.exports = {
   unfollowUser,
   suggestUsername,
   becomeCurator,
-  addSocialMedia
+  addSocialMedia,
+  getFollowers,
+  getFollowing
 };

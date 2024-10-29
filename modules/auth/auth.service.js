@@ -27,6 +27,9 @@ const authenticateUser = async (emailOrUsername, password, country, device, IP) 
       throw new Error('Invalid email/username or password');
     }
 
+    if(user.status === 'inactive'){
+      throw new Error('Account is inactive, please contact admin.')
+    }
     // Generate a session token
     const sessionToken = helper.generateSessionToken(user._id);
 

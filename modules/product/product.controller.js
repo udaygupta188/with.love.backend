@@ -14,9 +14,9 @@ const createProduct = async (req, res) => {
 // Get All Products
 const getAllProducts = async (req, res) => {
   try {
-    const {search, priceMin, priceMax, brand, sortBy , status, category} = req.query;
-    let filter ={};
-    if(status){
+    const { search, priceMin, priceMax, brand, sortBy, status, category } = req.query;
+    let filter = {};
+    if (status) {
       filter.status = status;
     }
     if (priceMin) {
@@ -28,9 +28,9 @@ const getAllProducts = async (req, res) => {
     if (brand) {
       filter.brand = brand; // Assuming brand is an ID
     }
-    if(category){
-      filter.categories = { $in: Array.isArray(category) ? category : [category] }; 
-     
+    if (category) {
+      filter.categories = { $in: Array.isArray(category) ? category : [category] };
+
     }
     if (search) {
       filter.$or = [
@@ -96,11 +96,35 @@ const addStyleRecommendation = async (req, res) => {
   }
 }
 
+
+const otherCurators = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const curators = await productService.otherCurators(id);;
+    return apiSuccessResponse(res, 'Fetch successfully other curators', curators, HTTP_STATUS.OK)
+  } catch (error) {
+    return apiErrorResponse(res, 'Failed to fetch other curators by for this product', error.message, HTTP_STATUS.INTERNAL_SERVER_ERROR)
+  }
+}
+
+const addReviewOnProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const review = await productService.addReviewOnProduct(id, req.body);;
+
+    return apiSuccessResponse(res, 'Review posted successfully', review, HTTP_STATUS.OK)
+  } catch (error) {
+    return apiErrorResponse(res, 'Internal Error occured', error.message, HTTP_STATUS.INTERNAL_SERVER_ERROR)
+  }
+}
 module.exports = {
   createProduct,
   getAllProducts,
   getProductById,
   updateProduct,
   deleteProduct,
-  addStyleRecommendation
+  addStyleRecommendation,
+  otherCurators,
+  addReviewOnProduct
 }
