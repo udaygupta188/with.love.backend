@@ -12,10 +12,14 @@ const createBrand = async (req, res) => {
   }
 };
 
-const brandsProduct = async(req, res) => {
+const brandsProduct = async (req, res) => {
   try {
-    const otherProducts = await brandService.otherProducts()
-    return apiSuccessResponse(res, '', null, HTTP_STATUS.CREATED);
+    const { brandId } = req.params;
+    const result = await brandService.otherProducts(brandId);
+    if (!result.status) {
+      return apiErrorResponse(res, "No products found", null, HTTP_STATUS.BAD_REQUEST)
+    }
+    return apiSuccessResponse(res, 'Other product of same brand', result.data, HTTP_STATUS.CREATED);
   } catch (error) {
     return apiErrorResponse(res, error.message, error.message, HTTP_STATUS.INTERNAL_SERVER_ERROR);
   }

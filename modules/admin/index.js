@@ -15,7 +15,7 @@ router.use('/admin', brand);
 router.use('/admin', category);
 router.use('/admin', role);
 router.use('/admin',ads);
-router.use('/admin/', requestsRoutes);
+router.use('/admin', requestsRoutes);
 
 
 module.exports = router;

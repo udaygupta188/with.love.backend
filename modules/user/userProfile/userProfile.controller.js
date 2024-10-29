@@ -8,8 +8,8 @@ const Requests = require('../../admin/requests/requests.model');
 
 const register = async (req, res) => {
   try {
-    const brandRole = await Role.findOne({ name: 'Brand' });
-    console.log(brandRole)
+    const brandRole = await Role.findOne({ name: { $regex: "Brand", $options: 'i' } });
+    
     const { name, email, username, password, role, profile_avatar, phone, address, date_of_birth, gender, description, logo } = req.body;
 
     // Validate input
@@ -22,7 +22,8 @@ const register = async (req, res) => {
     if (usernameCheck.exists) {
       return apiErrorResponse(res, 'Username already exists.', null, HTTP_STATUS.BAD_REQUEST);
     }
-console.log(role , brandRole._id )
+    console.log(role, brandRole._id.toString())
+    let roleId = brandRole._id.toString();
     // Call service to register user
     const result = await userService.registerUser({
       name,
@@ -35,9 +36,9 @@ console.log(role , brandRole._id )
       date_of_birth,
       gender,
       role,
-      status: role === brandRole._id ? 'inactive' : 'active'
+      status: role === roleId ? 'inactive' : 'active'
     });
-    if (role === brandRole._id) {
+    if (role === roleId) {
 
       const brand = new Brand({
         name: name,
@@ -203,7 +204,7 @@ const getFollowers = async (req, res) => {
   try {
     const { userId } = req.params;
     const followers = await userService.getFollowers(userId)
-    if(!followers.data.length){
+    if (!followers.data.length) {
       return apiErrorResponse(res, 'No Followers found', null, HTTP_STATUS.BAD_REQUEST)
     }
     return apiSuccessResponse(res, 'Fetched successfully followers', followers, HTTP_STATUS.OK)
@@ -216,7 +217,7 @@ const getFollowing = async (req, res) => {
   try {
     const { userId } = req.params;
     const following = await userService.getFollowing(userId)
-    if(!following.data.length){
+    if (!following.data.length) {
       return apiErrorResponse(res, 'No Following found', null, HTTP_STATUS.BAD_REQUEST)
     }
     return apiSuccessResponse(res, 'Fetched successfuly following', following, HTTP_STATUS.OK);
