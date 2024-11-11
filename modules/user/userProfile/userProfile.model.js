@@ -17,6 +17,7 @@ const userSchema = new Schema({
     joined: { type: Date, default: Date.now },
     // role: { type: String, enum: ['user', 'curator', 'admin','brand'], default: 'user' },
     role: { type: Schema.Types.ObjectId, ref: "Role" },
+    subRole: { type: Schema.Types.ObjectId, ref: 'SubRole' },
     profile_completeness: { type: Number, default: 0 },
     followers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     following: [{ type: Schema.Types.ObjectId, ref: 'User' }],
