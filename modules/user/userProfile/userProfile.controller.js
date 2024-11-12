@@ -9,7 +9,7 @@ const Requests = require('../../admin/requests/requests.model');
 const register = async (req, res) => {
   try {
     const brandRole = await Role.findOne({ name: { $regex: "Brand", $options: 'i' } });
-    
+    // const brandRole = await Role.findOne({ name: req.body.role });
     const { name, email, username, password, role, profile_avatar, phone, address, date_of_birth, gender, description, logo } = req.body;
 
     // Validate input
