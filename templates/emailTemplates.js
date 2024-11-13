@@ -1,9 +1,9 @@
 const { sendEmail } = require('../services/emailService');
 
-const sendRegistrationEmail = async (to, userName) => {
+const sendRegistrationEmail = async (to, userName, otp) => {
     const subject = 'Welcome to Our Service';
     const text = `Hi ${userName},\n\nThank you for registering with us!`;
-    const html = `<p>Hi ${userName},</p><p>Thank you for registering with us!</p>`;
+    const html = `<p>Hi ${userName},</p><p>Thank you for registering with us!\n Please submit this otp for registeration complete ${otp}</p>`;
   
     await sendEmail(to, subject, text, html);
   };

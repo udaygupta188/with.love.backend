@@ -9,8 +9,8 @@ const Requests = require('../../admin/requests/requests.model');
 const register = async (req, res) => {
   try {
     const brandRole = await Role.findOne({ name: { $regex: "Brand", $options: 'i' } });
-    
-    const { name, email, username, password, role, profile_avatar, phone, address, date_of_birth, gender, description, logo } = req.body;
+
+    const { name, email, username, password, role, profile_avatar, phone, address, date_of_birth, gender, description, logo, subRole } = req.body;
 
     // Validate input
     if (!name || !email || !username || !password || !role) {
@@ -36,7 +36,8 @@ const register = async (req, res) => {
       date_of_birth,
       gender,
       role,
-      status: role === roleId ? 'inactive' : 'active'
+      status: role === roleId ? 'inactive' : 'active',
+      subRole
     });
     if (role === roleId) {
 
@@ -225,6 +226,69 @@ const getFollowing = async (req, res) => {
     return apiErrorResponse(res, 'Error Occured', error.message, HTTP_STATUS.INTERNAL_SERVER_ERROR)
   }
 }
+
+const registeration = async (req, res) => {
+  try {
+    // const { email, name, phone } = req.body;
+    const result = await userService.registeration(req.body);
+    if (!result.status) {
+      apiErrorResponse(res, "Some thing went wrong", {}, HTTP_STATUS.INTERNAL_SERVER_ERROR)
+    }
+    apiSuccessResponse(res, "Basic info successfully saved", result.data, HTTP_STATUS.OK)
+
+  } catch (error) {
+    apiErrorResponse(res, "Internal server error", error.message, HTTP_STATUS.INTERNAL_SERVER_ERROR)
+
+  }
+}
+
+const validateOtp = async (req, res) => {
+  try {
+    // const { email, otp } = req.body;
+    const result = await userService.validateOtp(req.body)
+    if (!result.status) {
+      apiErrorResponse(res, result.message, null, HTTP_STATUS.BAD_REQUEST)
+    }
+    apiSuccessResponse(res, result.message, {}, HTTP_STATUS.OK)
+  } catch (error) {
+    apiErrorResponse(res, 'Internal server error', error.message, HTTP_STATUS.INTERNAL_SERVER_ERROR)
+
+  }
+}
+
+const setPassword = async (req, res) => {
+  try {
+    const result = await userService.setPassword(req.body);
+    if (result.status) {
+      apiSuccessResponse(res, 'Password set successfully. Proceed to select user type.', result.data, HTTP_STATUS.OK);
+    }
+  } catch (error) {
+    apiErrorResponse(res, "Error Occured", error.message, HTTP_STATUS.INTERNAL_SERVER_ERROR)
+  }
+}
+
+const selectUserType = async (req, res) => {
+  try {
+    const result = await userService.selectUserType(req.body);
+    if (result.status) {
+      apiSuccessResponse(res, result.message, result.data, HTTP_STATUS.OK)
+    }
+  } catch (error) {
+    apiErrorResponse(res, "Error Occured", error.message, HTTP_STATUS.INTERNAL_SERVER_ERROR)
+  }
+}
+
+const selectSubRole = async (req, res) => {
+  try {
+    const result = await userService.selectSubRole(req.body);
+    if (result.status) {
+      apiSuccessResponse(res, result.message, {}, HTTP_STATUS.OK)
+    }
+  } catch (error) {
+    apiErrorResponse(res, error.message, null, HTTP_STATUS.INTERNAL_SERVER_ERROR)
+  }
+}
+
 module.exports = {
   register,
   getProfile,
@@ -236,5 +300,10 @@ module.exports = {
   brandInteractions,
   addSocialMedia,
   getFollowers,
-  getFollowing
+  getFollowing,
+  registeration,
+  validateOtp,
+  setPassword,
+  selectUserType,
+  selectSubRole
 };

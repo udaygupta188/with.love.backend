@@ -4,8 +4,8 @@ const { Schema } = mongoose;
 const userSchema = new Schema({
     name: { type: String, required: true, trim: true },
     email: { type: String, required: true, unique: true, trim: true },
-    username: { type: String, required: true, unique: true, trim: true },
-    password: { type: String, required: true },
+    username: { type: String, unique: true, trim: true },
+    password: { type: String, },
     profile_avatar: { type: String },
     phone: { type: String },
     address: { type: String },
@@ -17,7 +17,7 @@ const userSchema = new Schema({
     joined: { type: Date, default: Date.now },
     // role: { type: String, enum: ['user', 'curator', 'admin','brand'], default: 'user' },
     role: { type: Schema.Types.ObjectId, ref: "Role" },
-    subRole: { type: Schema.Types.ObjectId, ref: 'SubRole' },
+    subRole: [{ type: Schema.Types.ObjectId, ref: 'SubRole' }],
     profile_completeness: { type: Number, default: 0 },
     followers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     following: [{ type: Schema.Types.ObjectId, ref: 'User' }],
@@ -27,7 +27,11 @@ const userSchema = new Schema({
     resetPasswordExpires: { type: Date }, // Field to store reset token expiration time
     profileLevel: { type: Schema.Types.ObjectId, ref: 'profileLevelModel' }, // Reference to ProfileLevel
     points: { type: Number, default: 0 }, // Track user's points
-    socialmedia: [{ type: Schema.Types.ObjectId, ref: "SocialMedia" }]
+    socialmedia: [{ type: Schema.Types.ObjectId, ref: "SocialMedia" }],
+    otp: { type: Number },
+    otp_status: { type: String, enum: ['pending', 'used', 'expire'], default: 'pending' },
+    otpExpiry: { type: Date }, 
+
 }, { timestamps: true });
 
 const User = mongoose.model('User', userSchema);

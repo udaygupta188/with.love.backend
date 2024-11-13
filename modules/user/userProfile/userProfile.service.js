@@ -1,9 +1,11 @@
 const { RolesAnywhere } = require("aws-sdk");
 const SocialMedia = require("../../../models/socialMediaModel");
-const { User } = require("./userProfile.model.js");
+const { User, Influencer } = require("./userProfile.model.js");
 const Role = require('../../admin/role/role.model.js')
 const bcrypt = require("bcryptjs");
 const { default: mongoose } = require("mongoose");
+const { sendEmail } = require("../../../services/emailService.js");
+const { sendRegistrationEmail } = require("../../../templates/emailTemplates.js");
 // const Influencer = require("../models/influencerModel.js");
 
 // Service to register a new user
@@ -288,6 +290,93 @@ const getFollowing = async (userId) => {
   }
 }
 
+const registeration = async (payload) => {
+  try {
+    const otp = Math.floor(100000 + Math.random() * 900000);
+    const otpExpiry = Date.now() + 10 * 60 * 1000; // OTP expires in 10 minutes
+    const result = new User({ email: payload.email, name: payload.name, phone: payload.phone, otpExpiry, otp, profile_completeness: 1 });
+    await result.save();
+    result.otp =0
+    await sendRegistrationEmail(payload.email, payload.name, otp)
+    return { status: true, data: result };
+  } catch (error) {
+
+    throw new Error(error.message)
+  }
+}
+
+const validateOtp = async (payload) => {
+  try {
+    const user = await User.findOne({ email: payload.email });
+
+    if (!user) {
+      return { status: false, message: 'User not found' };
+    }
+    if (user.otp !== payload.otp || Date.now() > user.otpExpiry) {
+      throw new Error('Invalid or expired OTP');
+    }
+    user.otp_status = 'used';
+    user.profile_completeness = 2;
+    await user.save();
+    return { status: true, message: "OTP verified" }
+
+  } catch (error) {
+    throw new Error(error.message)
+  }
+}
+
+const setPassword = async (payload) => {
+  try {
+    const { email, password } = payload;
+    const user = await User.findOne({ email });
+    if (!user) {
+      throw new Error('User not found');
+    }
+    // Hash the password before saving
+    const hashedPassword = await bcrypt.hash(password, 10);
+    user.password = hashedPassword;
+    user.profile_completeness = 3;
+    await user.save();
+    return { status: true, message: 'Password set successfully. Proceed to select user type.', data: user }
+
+  } catch (error) {
+    throw new Error('Error setting password')
+  }
+}
+
+const selectUserType = async (payload) => {
+  try {
+    const { email, roleId } = payload;
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+    user.role = roleId;  // Example: 'seller', 'buyer', 'model'
+    user.profile_completeness = 4
+    await user.save();
+    return { status: true, message: 'User type selected successfully. Please procced for SubRole selection.' }
+  } catch (error) {
+    console.log(error)
+    throw new Error('Error selecting user type')
+  }
+}
+
+const selectSubRole = async (payload) => {
+  try {
+    const { email, subRole } = payload
+    const user = await User.findOne({ email })
+    if (!user) {
+      throw new Error('User not found');
+    }
+    user.subRole = subRole;  // Example: 'seller', 'buyer', 'model'
+    user.profile_completeness = 5
+    await user.save();
+    return { status: true, message: 'Sub Role selected successfully. Registration complete.' }
+  } catch (error) {
+    throw new Error(error.message)
+  }
+}
 module.exports = {
   registerUser,
   usernameCheck,
@@ -299,5 +388,10 @@ module.exports = {
   becomeCurator,
   addSocialMedia,
   getFollowers,
-  getFollowing
+  getFollowing,
+  registeration,
+  validateOtp,
+  setPassword,
+  selectUserType,
+  selectSubRole
 };

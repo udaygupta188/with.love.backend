@@ -13,7 +13,7 @@ const sendTestEmail = async (req, res) => {
     // Send the appropriate email based on type
     switch (emailType) {
       case 'registration':
-        await sendRegistrationEmail(to, userName);
+        await sendRegistrationEmail(to, userName, 1234);
         break;
       case 'forgotPassword':
         if (!resetUrl) {
