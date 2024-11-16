@@ -294,11 +294,13 @@ const registeration = async (payload) => {
   try {
     const otp = Math.floor(100000 + Math.random() * 900000);
     const otpExpiry = Date.now() + 10 * 60 * 1000; // OTP expires in 10 minutes
-    const user = await User.findOne({ email:payload.email })
-    if(user){
+    const user = await User.findOne({ email: payload.email })
+    if (user) {
       throw new Error('Already account with this email.')
     }
-    const result = new User({ email: payload.email, name: payload.name, phone: payload.phone, otpExpiry, otp, profile_completeness: 1 });
+    const username = await suggestUsername(payload.name);
+
+    const result = new User({ email: payload.email, name: payload.name, phone: payload.phone, username: username[1], otpExpiry, otp, profile_completeness: 1 });
     await result.save();
     result.otp = 0
     await sendRegistrationEmail(payload.email, payload.name, otp)
