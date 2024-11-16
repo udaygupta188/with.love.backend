@@ -135,9 +135,10 @@ const selectUserTypeSchema = yup.object().shape({
 })
 
 const selectSubRoleSchema = yup.object().shape({
-    email: yup.string().trim().email('Email is required'),
-    subRole:yup.string().trim().required('Sub role is required')
-})
+    email: yup.string().trim().email('Invalid email format'),
+    subRole: yup.array().of(yup.string()).required('Sub role is required')
+});
+
 
 module.exports = {
     resetPasswordSchema,
