@@ -109,9 +109,36 @@ const countrySchema = yup.object().shape({
 
 const socialMediaSchema = yup.object().shape({
     platForm: yup.string().trim().required("Platform is required"),
-    socialId:yup.string().trim().required("Social Id is required"),
-    followers:yup.number().min(0)
+    socialId: yup.string().trim().required("Social Id is required"),
+    followers: yup.number().min(0)
 })
+
+const basicInfoSchema = yup.object().shape({
+    name: yup.string().trim().required('Name is required'),
+    email: yup.string().trim().required('Email is required'),
+    phone: yup.number().required('Phone number is required')
+})
+
+const validateOtpScehma = yup.object().shape({
+    email: yup.string().trim().email('Email is required'),
+    otp: yup.number().required('Otp is required')
+})
+
+const setPasswordSchema = yup.object().shape({
+    email: yup.string().trim().email('Email is required'),
+    password: yup.string().trim().required('Password is required')
+})
+
+const selectUserTypeSchema = yup.object().shape({
+    email: yup.string().trim().email('Email is required'),
+    roleId: yup.string().trim().required('Role id is required')
+})
+
+const selectSubRoleSchema = yup.object().shape({
+    email: yup.string().trim().email('Email is required'),
+    subRole:yup.string().trim().required('Sub role is required')
+})
+
 module.exports = {
     resetPasswordSchema,
     createUserSchema,
@@ -121,5 +148,10 @@ module.exports = {
     downloadQuerySchema,
     addDeviceSchema,
     countrySchema,
-    socialMediaSchema
+    socialMediaSchema,
+    basicInfoSchema,
+    validateOtpScehma,
+    setPasswordSchema,
+    selectUserTypeSchema,
+    selectSubRoleSchema
 };

@@ -1,4 +1,4 @@
-const BrandCuratorInteraction = require('../../../models/BrandCuratorInteractionModel');
+
 const userService = require('./userProfile.service');
 const brandService = require('../../admin/brand/brand.service')
 const { apiSuccessResponse, apiErrorResponse, HTTP_STATUS } = require('../../../utils'); // Importing All helper functions
@@ -179,11 +179,11 @@ const becomeCurator = async (req, res) => {
 const brandInteractions = async (req, res) => {
   try {
     const curatorId = req.user._id; // Assuming the curator is logged in
-    const interactions = await BrandCuratorInteraction
-      .find({ curator: curatorId })
-      .populate('brand', 'name logo') // Populate brand details
-      .sort({ reachedAt: -1 }); // Sort by date (newest first)
-    return await apiSuccessResponse(res, "", interactions, HTTP_STATUS.OK);
+    // const interactions = await BrandCuratorInteraction
+    //   .find({ curator: curatorId })
+    //   .populate('brand', 'name logo') // Populate brand details
+    //   .sort({ reachedAt: -1 }); // Sort by date (newest first)
+    return await apiSuccessResponse(res, "", null, HTTP_STATUS.OK);
   } catch (error) {
     return apiErrorResponse(res, 'Internal Server Error', null, HTTP_STATUS.INTERNAL_SERVER_ERROR);
   }
@@ -237,7 +237,7 @@ const registeration = async (req, res) => {
     apiSuccessResponse(res, "Basic info successfully saved", result.data, HTTP_STATUS.OK)
 
   } catch (error) {
-    apiErrorResponse(res, "Internal server error", error.message, HTTP_STATUS.INTERNAL_SERVER_ERROR)
+    apiErrorResponse(res,  error.message,null, HTTP_STATUS.INTERNAL_SERVER_ERROR)
 
   }
 }
@@ -251,7 +251,7 @@ const validateOtp = async (req, res) => {
     }
     apiSuccessResponse(res, result.message, {}, HTTP_STATUS.OK)
   } catch (error) {
-    apiErrorResponse(res, 'Internal server error', error.message, HTTP_STATUS.INTERNAL_SERVER_ERROR)
+    apiErrorResponse(res,  error.message, null, HTTP_STATUS.INTERNAL_SERVER_ERROR)
 
   }
 }
@@ -263,7 +263,7 @@ const setPassword = async (req, res) => {
       apiSuccessResponse(res, 'Password set successfully. Proceed to select user type.', result.data, HTTP_STATUS.OK);
     }
   } catch (error) {
-    apiErrorResponse(res, "Error Occured", error.message, HTTP_STATUS.INTERNAL_SERVER_ERROR)
+    apiErrorResponse(res,  error.message,null, HTTP_STATUS.INTERNAL_SERVER_ERROR)
   }
 }
 
@@ -274,7 +274,7 @@ const selectUserType = async (req, res) => {
       apiSuccessResponse(res, result.message, result.data, HTTP_STATUS.OK)
     }
   } catch (error) {
-    apiErrorResponse(res, "Error Occured", error.message, HTTP_STATUS.INTERNAL_SERVER_ERROR)
+    apiErrorResponse(res,  error.message, null, HTTP_STATUS.INTERNAL_SERVER_ERROR)
   }
 }
 

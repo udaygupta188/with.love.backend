@@ -1,5 +1,5 @@
 const { RolesAnywhere } = require("aws-sdk");
-const SocialMedia = require("../../../models/socialMediaModel");
+// const SocialMedia = require("../../../models/socialMediaModel");
 const { User, Influencer } = require("./userProfile.model.js");
 const Role = require('../../admin/role/role.model.js')
 const bcrypt = require("bcryptjs");
@@ -206,20 +206,20 @@ const becomeCurator = async (userId, platform, socialId, followers) => {
     let socialMedia = await SocialMedia.findOne({ user: userId, platform: platform });
 
     // Step 2: If no social media entry exists, create a new one
-    if (!socialMedia) {
-      socialMedia = new SocialMedia({
-        user: userId,
-        platform,
-        socialId,
-        followers
-      });
-      await socialMedia.save();
-    } else {
-      // Step 3: If social media exists, update the followers and socialId if needed
-      socialMedia.socialId = socialId;
-      socialMedia.followers = followers;
-      await socialMedia.save();
-    }
+    // if (!socialMedia) {
+    //   socialMedia = new SocialMedia({
+    //     user: userId,
+    //     platform,
+    //     socialId,
+    //     followers
+    //   });
+    //   await socialMedia.save();
+    // } else {
+    //   // Step 3: If social media exists, update the followers and socialId if needed
+    //   socialMedia.socialId = socialId;
+    //   socialMedia.followers = followers;
+    //   await socialMedia.save();
+    // }
 
     // Step 4: Check if the user has enough followers to become a curator
     if (socialMedia.followers >= 10000) {
@@ -294,9 +294,13 @@ const registeration = async (payload) => {
   try {
     const otp = Math.floor(100000 + Math.random() * 900000);
     const otpExpiry = Date.now() + 10 * 60 * 1000; // OTP expires in 10 minutes
+    const user = await User.findOne({ email:payload.email })
+    if(user){
+      throw new Error('Already account with this email.')
+    }
     const result = new User({ email: payload.email, name: payload.name, phone: payload.phone, otpExpiry, otp, profile_completeness: 1 });
     await result.save();
-    result.otp =0
+    result.otp = 0
     await sendRegistrationEmail(payload.email, payload.name, otp)
     return { status: true, data: result };
   } catch (error) {
