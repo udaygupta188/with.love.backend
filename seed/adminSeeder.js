@@ -40,7 +40,7 @@ const hashPasswords = async (admins) => {
 // Function to Seed Admin Data
  const seedAdmins = async () => {
   try {
-    await connectDB();
+
     await hashPasswords(admins);
     await Admin.deleteMany();
     const insertedAdmins = await Admin.insertMany(admins);
@@ -48,10 +48,10 @@ const hashPasswords = async (admins) => {
   } catch (err) {
     console.error('Error seeding admins:', err);
   } finally {
-    mongoose.disconnect();
+    // mongoose.disconnect();
   }
 };
 
 // Run the Seeder
-// seedAdmins();
+seedAdmins();
 module.exports = seedAdmins
