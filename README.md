@@ -1,5 +1,14 @@
-TO-DO LIST
--------------------
--------------------
+Backend URL
+---------------
+https://withlove-backend.vercel.app/api
 
-Change All the folder structure from msc to module wise
+===========Deploy TO Verel===========
+
+npm install --global vercel
+vercel login
+vercel whoami
+vercel    //----(complete the all steps)
+
+after making chanegs for Redeploy run this command
+
+vercel --prod
