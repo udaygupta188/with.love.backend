@@ -4,6 +4,7 @@ const { Schema } = mongoose;
 const subRoleSchema = new Schema({
     name: { type: String },
     roleId: { type: Schema.Types.ObjectId, ref: 'Role'  }
+   
 },
     {
         timestamps: true

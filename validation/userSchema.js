@@ -114,11 +114,18 @@ const socialMediaSchema = yup.object().shape({
 })
 
 const basicInfoSchema = yup.object().shape({
-    name: yup.string().trim().required('Name is required'),
+    // name: yup.string().trim().required('Name is required'),
     email: yup.string().trim().required('Email is required'),
-    phone: yup.number().required('Phone number is required')
+    password: yup.string().trim().required('Password is required'),
+
+    
+    // phone: yup.number().required('Phone number is required')
 })
 
+const SendOtpScehma = yup.object().shape({
+    email: yup.string().trim().email('Email is required'),
+ 
+})
 const validateOtpScehma = yup.object().shape({
     email: yup.string().trim().email('Email is required'),
     otp: yup.number().required('Otp is required')
@@ -154,5 +161,6 @@ module.exports = {
     validateOtpScehma,
     setPasswordSchema,
     selectUserTypeSchema,
-    selectSubRoleSchema
+    selectSubRoleSchema,
+    SendOtpScehma
 };

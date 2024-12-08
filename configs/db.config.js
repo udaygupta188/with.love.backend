@@ -25,9 +25,9 @@ const connectDB = async (DB) => {
         console.log('Running seeders...');
        if(conn){
 
-        await import('../seed/adminSeeder.js');
-        await import('../seed/RoleSeeder.js');
-       await import('../seed/subRoleSeeder.js');
+    //     await import('../seed/adminSeeder.js');
+    //     await import('../seed/RoleSeeder.js');
+    //    await import('../seed/subRoleSeeder.js');
        }
         
         console.log('Seeders executed successfully.');

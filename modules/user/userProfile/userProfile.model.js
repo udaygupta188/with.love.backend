@@ -2,10 +2,10 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const userSchema = new Schema({
-    name: { type: String, required: true, trim: true },
+    name: { type: String, trim: true },
     email: { type: String, required: true, unique: true, trim: true },
     username: { type: String, trim: true },
-    password: { type: String, },
+    password: { type: String, required: true,},
     profile_avatar: { type: String },
     phone: { type: String },
     address: { type: String },
@@ -16,8 +16,12 @@ const userSchema = new Schema({
     blocked: { type: Boolean, default: false },
     joined: { type: Date, default: Date.now },
     // role: { type: String, enum: ['user', 'curator', 'admin','brand'], default: 'user' },
+    
     role: { type: Schema.Types.ObjectId, ref: "Role" },
     subRole: [{ type: Schema.Types.ObjectId, ref: 'SubRole' }],
+
+
+
     profile_completeness: { type: Number, default: 0 },
     followers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     following: [{ type: Schema.Types.ObjectId, ref: 'User' }],
@@ -35,10 +39,6 @@ const userSchema = new Schema({
 }, { timestamps: true });
 
 const User = mongoose.model('User', userSchema);
-
-
-
-
 const influencerSchema = new Schema({
     userId: { type: mongoose.Types.ObjectId, ref: "User" },
     brands: [{ type: mongoose.Types.ObjectId, ref: "Brand" }],
