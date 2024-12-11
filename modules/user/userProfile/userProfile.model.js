@@ -32,10 +32,7 @@ const userSchema = new Schema({
     profileLevel: { type: Schema.Types.ObjectId, ref: 'profileLevelModel' }, // Reference to ProfileLevel
     points: { type: Number, default: 0 }, // Track user's points
     socialmedia: [{ type: Schema.Types.ObjectId, ref: "SocialMedia" }],
-    otp: { type: Number },
-    otp_status: { type: String, enum: ['pending', 'used', 'expire'], default: 'pending' },
-    otpExpiry: { type: Date }, 
-
+   
 }, { timestamps: true });
 
 const User = mongoose.model('User', userSchema);

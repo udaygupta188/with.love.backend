@@ -5,6 +5,7 @@ const Role = require("../../admin/role/role.model.js");
 const bcrypt = require("bcryptjs");
 const { default: mongoose } = require("mongoose");
 const { sendEmail } = require("../../../services/emailService.js");
+
 const {
   sendRegistrationEmail,
 } = require("../../../templates/emailTemplates.js");
@@ -326,10 +327,8 @@ const getFollowing = async (userId) => {
 const registeration = async (payload) => {
   try {
     console.log(payload);
-
-    const otp = Math.floor(100000 + Math.random() * 900000);
-    const otpExpiry = Date.now() + 10 * 60 * 1000; // OTP expires in 10 minutes
     const user = await User.findOne({ email: payload.email });
+    const role = await Role.findOne(payload.roleId);
     if (user) {
       throw new Error("Already account with this email.");
     }
@@ -338,21 +337,21 @@ const registeration = async (payload) => {
 
     const username = await suggestUsername(emailForUsername);
     const hashedPassword = await bcrypt.hash(payload.password, 10);
+    let currentStatus = "inactive";
+    if (role.name === "User") {
+      currentStatus = "active";
+    }
     const result = new User({
+      status: currentStatus,
       email: payload.email,
       name: payload.name,
-      phone: payload.phone,
-      role: payload.role,
-      subRole: payload.subRole,
+      role: payload.roleId,
+      subRole: payload.subRoleId,
       password: hashedPassword,
       username: username[1],
-      otpExpiry,
-      otp,
       profile_completeness: 1,
     });
     await result.save();
-    result.otp = 0;
-    await sendRegistrationEmail(payload.email, payload.name, otp);
     return { status: true, data: result };
   } catch (error) {
     throw new Error(error.message);
@@ -362,12 +361,12 @@ const registeration = async (payload) => {
 const sendOtp = async (payload) => {
   try {
     const otp = Math.floor(100000 + Math.random() * 900000);
-    const expirationTime = new Date(Date.now() + 5 * 60 * 1000); 
+    const expirationTime = new Date(Date.now() + 5 * 60 * 1000);
     await sendRegistrationEmail(payload.email, otp);
     const storeOtp = new OTP({
       email: payload.email,
       otp: otp,
-      expiresAt:expirationTime
+      expiresAt: expirationTime,
     });
     await storeOtp.save();
     return { status: true, message: "OTP Send On Your Mail", data: otp };
@@ -378,17 +377,16 @@ const sendOtp = async (payload) => {
 
 const validateOtp = async (payload) => {
   try {
-    const user = await User.findOne({ email: payload.email });
+    const otp = await OTP.findOne({ email: payload.data.email });
 
-    if (!user) {
-      return { status: false, message: "User not found" };
+    if (!otp) {
+      return { status: false, message: "otp not found" };
     }
-    if (user.otp !== payload.otp || Date.now() > user.otpExpiry) {
+    if (otp.otp !== payload.otp && Date.now() > otp.expiresAt) {
       throw new Error("Invalid or expired OTP");
+    } else {
+      await registeration(payload.data);
     }
-    user.otp_status = "used";
-    user.profile_completeness = 2;
-    await user.save();
     return { status: true, message: "OTP verified" };
   } catch (error) {
     throw new Error(error.message);
