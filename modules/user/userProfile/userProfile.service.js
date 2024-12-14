@@ -328,7 +328,7 @@ const registeration = async (payload) => {
   try {
     console.log(payload);
     const user = await User.findOne({ email: payload.email });
-    const role = await Role.findOne(payload.roleId);
+    const role = await Role.findOne({ _id: payload.roleId });
     if (user) {
       throw new Error("Already account with this email.");
     }
