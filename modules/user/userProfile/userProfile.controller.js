@@ -391,7 +391,6 @@ const getFollowing = async (req, res) => {
 
 const registeration = async (req, res) => {
   try {
-    // const { email, name, phone } = req.body;
     const result = await userService.registeration(req.body);
     if (!result.status) {
       apiErrorResponse(
@@ -523,5 +522,5 @@ module.exports = {
   setPassword,
   selectUserType,
   selectSubRole,
-  sendOtp
+  sendOtp,
 };
