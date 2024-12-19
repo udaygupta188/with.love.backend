@@ -4,8 +4,9 @@ const productController = require('./product.controller');
 const orderController = require('../order/order.controller')
 const { validateProduct, styleProductSchema } = require('../../validation/productValidation');
 const validationMiddleware = require('../../middleware/validationMiddleware');
+const { checkFollowers } = require('../../utils');
 // Create a Product
-router.post('/products', validateProduct, productController.createProduct);
+router.post('/products',checkFollowers, validateProduct, productController.createProduct);
 
 // Get All Products
 router.get('/products', productController.getAllProducts);

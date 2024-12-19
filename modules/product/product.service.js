@@ -5,6 +5,11 @@ const { Product, HowToStyle } = require('./product.model');
 
 // Create Product
 exports.createProduct = async (data) => {
+
+  const isExist = await Product.findOne({sku:data.sku})
+  if(isExist){
+    throw new Error('SKU already exist')
+  }
   const product = new Product(data);
   return await product.save();
 };

@@ -7,7 +7,7 @@ const createProduct = async (req, res) => {
     const product = await productService.createProduct(req.body);
     return apiSuccessResponse(res, 'Product created successfully', product, HTTP_STATUS.CREATED);
   } catch (error) {
-    return apiErrorResponse(res, 'Product creation failed', null, HTTP_STATUS.INTERNAL_SERVER_ERROR)
+    return apiErrorResponse(res, 'Product creation failed', error.message, HTTP_STATUS.INTERNAL_SERVER_ERROR)
   }
 };
 

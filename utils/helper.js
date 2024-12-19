@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const { apiErrorResponse, HTTP_STATUS } = require('./responseHelper');
+const { User } = require('../modules/user/userProfile/userProfile.model');
 const SALT_ROUNDS = parseInt(process.env.SALT_ROUNDS) || 10; // Default to 10 if SALT_ROUNDS is not defined
 
 
@@ -27,20 +28,55 @@ const generateSlug = (text) => {
         .replace(/-+$/g, ''); // Remove trailing -
 };
 
-const checkFollowers = (req, res, next) => {
+const checkFollowers =async (req, res, next) => {
     try {
-        
-        if (10000 > req.body.followers) {
-            console.log("first enough followers")
-            return apiErrorResponse(res, "Followers is not enough", null, HTTP_STATUS.FORBIDDEN); 
+
+        const userId = req.body.userId || req.params.userId; 
+        const user = await User.findById(userId);
+
+         // Check if user exists
+         if (!user) {
+            return apiErrorResponse(res, "User not found", null, HTTP_STATUS.NOT_FOUND);
         }
-        next()
+        // Check if the user is a curator
+        const { followers, likes, shares, engagement, role } = user?.socialmedia;
+
+        // If the role is brand, allow them to add the product without these checks
+        if (user.role === 'brand') {
+            return next();
+        }
+
+        // If the role is curator, validate their engagement numbers
+        if (user.role === 'user') {
+            return next();
+            if (followers < 10000) {
+                console.log("Not enough followers");
+                return apiErrorResponse(res, "Followers count must be above 10k to add a product", null, HTTP_STATUS.FORBIDDEN);
+            }
+
+            if (likes < 10000) {
+                console.log("Not enough likes");
+                return apiErrorResponse(res, "Likes count must be above 10k to add a product", null, HTTP_STATUS.FORBIDDEN);
+            }
+
+            if (shares < 10000) {
+                console.log("Not enough shares");
+                return apiErrorResponse(res, "Shares count must be above 10k to add a product", null, HTTP_STATUS.FORBIDDEN);
+            }
+
+            if (engagement < 10000) {
+                console.log("Not enough engagement");
+                return apiErrorResponse(res, "Engagement count must be above 10k to add a product", null, HTTP_STATUS.FORBIDDEN);
+            }
+        }
+
+        next();
+
     } catch (error) {
-        return apiErrorResponse(res, "Followers is not enough", error.message, HTTP_STATUS.FORBIDDEN);
-
+        return apiErrorResponse(res, "An error occurred while validating curator status", error.message, HTTP_STATUS.FORBIDDEN);
     }
+};
 
-}
 
 module.exports = {
     hashPasswords,
