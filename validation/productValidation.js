@@ -4,8 +4,6 @@ const yup = require('yup');
 const productSchema = yup.object({
   name: yup.string().required('Name is required'),
   price: yup.number().required('Price must be a number'),
-  brand: yup.string().required('Brand is required'),
-  influencer: yup.string().required('Influencer is required'),
 });
 
 const styleProductSchema = yup.object({

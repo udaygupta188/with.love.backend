@@ -32,8 +32,8 @@ const checkFollowers =async (req, res, next) => {
     try {
 
         const userId = req.body.userId || req.params.userId; 
-        const user = await User.findById(userId);
-
+        const user = await User.findById(userId).populate('role');
+console.log(user)
          // Check if user exists
          if (!user) {
             return apiErrorResponse(res, "User not found", null, HTTP_STATUS.NOT_FOUND);
@@ -42,44 +42,56 @@ const checkFollowers =async (req, res, next) => {
         const { followers, likes, shares, engagement, role } = user?.socialmedia;
 
         // If the role is brand, allow them to add the product without these checks
-        if (user.role === 'brand') {
+        if (user.role.name === 'brand') {
             return next();
         }
 
         // If the role is curator, validate their engagement numbers
-        if (user.role === 'user') {
+        if (user.role.name === 'user') {
+            if(user.seller_approval)
             return next();
-            if (followers < 10000) {
-                console.log("Not enough followers");
-                return apiErrorResponse(res, "Followers count must be above 10k to add a product", null, HTTP_STATUS.FORBIDDEN);
-            }
-
-            if (likes < 10000) {
-                console.log("Not enough likes");
-                return apiErrorResponse(res, "Likes count must be above 10k to add a product", null, HTTP_STATUS.FORBIDDEN);
-            }
-
-            if (shares < 10000) {
-                console.log("Not enough shares");
-                return apiErrorResponse(res, "Shares count must be above 10k to add a product", null, HTTP_STATUS.FORBIDDEN);
-            }
-
-            if (engagement < 10000) {
-                console.log("Not enough engagement");
-                return apiErrorResponse(res, "Engagement count must be above 10k to add a product", null, HTTP_STATUS.FORBIDDEN);
-            }
+          
         }
+         // Default response for unknown roles
+         return apiErrorResponse(res, "Unauthorized user role", null, HTTP_STATUS.FORBIDDEN);
 
-        next();
+
+        // next();
 
     } catch (error) {
         return apiErrorResponse(res, "An error occurred while validating curator status", error.message, HTTP_STATUS.FORBIDDEN);
     }
 };
 
+const checkApproval =async(req, res, next)=>{
+    const userId = req.body.userId || req.params.userId; 
+        const user = await User.findById(userId);
+    if (user.followers < 10000) {
+        console.log("Not enough followers");
+        return apiErrorResponse(res, "Followers count must be above 10k to add a product", null, HTTP_STATUS.FORBIDDEN);
+    }
+
+    if (user.likes < 10000) {
+        console.log("Not enough likes");
+        return apiErrorResponse(res, "Likes count must be above 10k to add a product", null, HTTP_STATUS.FORBIDDEN);
+    }
+
+    if (user.shares < 10000) {
+        console.log("Not enough shares");
+        return apiErrorResponse(res, "Shares count must be above 10k to add a product", null, HTTP_STATUS.FORBIDDEN);
+    }
+
+    if (user.engagement < 10000) {
+        console.log("Not enough engagement");
+        return apiErrorResponse(res, "Engagement count must be above 10k to add a product", null, HTTP_STATUS.FORBIDDEN);
+    }
+    next();
+}
+
 
 module.exports = {
     hashPasswords,
     generateSlug,
-    checkFollowers
+    checkFollowers,
+    checkApproval
 };

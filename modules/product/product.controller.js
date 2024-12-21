@@ -14,7 +14,7 @@ const createProduct = async (req, res) => {
 // Get All Products
 const getAllProducts = async (req, res) => {
   try {
-    const { search, priceMin, priceMax, brand, sortBy, status, category } = req.query;
+    const { search, priceMin, priceMax, sortBy, status, category } = req.query;
     let filter = {};
     if (status) {
       filter.status = status;
@@ -25,9 +25,7 @@ const getAllProducts = async (req, res) => {
     if (priceMax) {
       filter.price = { ...filter.price, $lte: parseFloat(priceMax) }; // Less than or equal to priceMax
     }
-    if (brand) {
-      filter.brand = brand; // Assuming brand is an ID
-    }
+   
     if (category) {
       filter.categories = { $in: Array.isArray(category) ? category : [category] };
 
@@ -41,7 +39,7 @@ const getAllProducts = async (req, res) => {
     const products = await productService.getAllProducts(filter, sortBy);
     return apiSuccessResponse(res, 'Products fetched successfully', products, HTTP_STATUS.OK);
   } catch (error) {
-    return apiErrorResponse(res, 'Failed to fetch products', null, HTTP_STATUS.INTERNAL_SERVER_ERROR)
+    return apiErrorResponse(res, 'Failed to fetch products', error.message, HTTP_STATUS.INTERNAL_SERVER_ERROR)
   }
 };
 
@@ -54,7 +52,7 @@ const getProductById = async (req, res) => {
     }
     return apiSuccessResponse(res, 'Product fetched successfully', product, HTTP_STATUS.OK);
   } catch (error) {
-    return apiErrorResponse(res, 'Failed to fetch product', null, HTTP_STATUS.INTERNAL_SERVER_ERROR)
+    return apiErrorResponse(res, 'Failed to fetch product', error.message, HTTP_STATUS.INTERNAL_SERVER_ERROR)
   }
 };
 
@@ -80,7 +78,7 @@ const deleteProduct = async (req, res) => {
       return apiErrorResponse(res, 'Product not found', null, HTTP_STATUS.NOT_FOUND)
     }
     // res.status(204).json({ message: 'Product deleted successfully' });
-    return apiSuccessResponse(res, 'Product deleted successfully', null, 204);
+    return apiSuccessResponse(res, 'Product deleted successfully', deletedProduct, 200);
   } catch (error) {
     // res.status(500).json({ error: 'Failed to delete product' });
     return apiErrorResponse(res, 'Failed to delete product', null, HTTP_STATUS.INTERNAL_SERVER_ERROR)

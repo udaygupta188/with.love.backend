@@ -7,6 +7,7 @@ const influencerRoutes = require('./influencer/influencer.route');
 const publicRoutes = require('./public/public.route');
 const orderRoutes = require('./order/order.route');
 const productRoutes = require('./product/product.route');
+const ratingRoutes = require('./rating/rating.route');
 //auth 
 router.use(authRoutes);
 //admin
@@ -22,5 +23,6 @@ router.use(orderRoutes)
 router.use(productRoutes)
 //public routes
 router.use(publicRoutes)
-
+//rating routes
+router.use(ratingRoutes)
 module.exports= router

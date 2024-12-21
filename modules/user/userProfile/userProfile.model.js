@@ -21,7 +21,7 @@ const userSchema = new Schema({
     subRole: [{ type: Schema.Types.ObjectId, ref: 'SubRole' }],
 
 
-
+    seller_approval:{ type: Boolean, default:true},
     profile_completeness: { type: Number, default: 0 },
     followers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     following: [{ type: Schema.Types.ObjectId, ref: 'User' }],
