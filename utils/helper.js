@@ -33,7 +33,7 @@ const checkFollowers =async (req, res, next) => {
 
         const userId = req.body.userId || req.params.userId; 
         const user = await User.findById(userId).populate('role');
-console.log(user)
+        console.log(user,  req.body);
          // Check if user exists
          if (!user) {
             return apiErrorResponse(res, "User not found", null, HTTP_STATUS.NOT_FOUND);
@@ -42,12 +42,12 @@ console.log(user)
         const { followers, likes, shares, engagement, role } = user?.socialmedia;
 
         // If the role is brand, allow them to add the product without these checks
-        if (user.role.name === 'brand') {
+        if (user.role.name.toUpperCase() === 'BRAND') {
             return next();
         }
 
         // If the role is curator, validate their engagement numbers
-        if (user.role.name === 'user') {
+        if (user.role.name.toUpperCase() === 'USER') {
             if(user.seller_approval)
             return next();
           
@@ -59,6 +59,7 @@ console.log(user)
         // next();
 
     } catch (error) {
+        console.log(error)
         return apiErrorResponse(res, "An error occurred while validating curator status", error.message, HTTP_STATUS.FORBIDDEN);
     }
 };

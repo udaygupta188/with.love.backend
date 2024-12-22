@@ -1,10 +1,16 @@
-// controllers/productController.js
+
 const productService = require('./product.service')
-const { apiSuccessResponse, apiErrorResponse, HTTP_STATUS } = require('../../utils'); // Assuming you have imported the helper functions
+const { apiSuccessResponse, apiErrorResponse, HTTP_STATUS } = require('../../utils');
 // Create Product
 const createProduct = async (req, res) => {
   try {
-    const product = await productService.createProduct(req.body);
+    const imagePaths = req.files.map(file => file.path);
+
+    const productData = {
+      ...req.body,
+      images: imagePaths,
+    };
+    const product = await productService.createProduct(productData  );
     return apiSuccessResponse(res, 'Product created successfully', product, HTTP_STATUS.CREATED);
   } catch (error) {
     return apiErrorResponse(res, 'Product creation failed', error.message, HTTP_STATUS.INTERNAL_SERVER_ERROR)
@@ -59,7 +65,13 @@ const getProductById = async (req, res) => {
 // Update Product
 const updateProduct = async (req, res) => {
   try {
-    const updatedProduct = await productService.updateProduct(req.params.id, req.body);
+    const imagePaths = req.files.map(file => file.path);
+
+    const productData = {
+      ...req.body,
+      images: imagePaths,
+    };
+    const updatedProduct = await productService.updateProduct(req.params.id, productData);
     if (!updatedProduct) {
       return apiErrorResponse(res, 'Product not found', null, HTTP_STATUS.NOT_FOUND)
     }

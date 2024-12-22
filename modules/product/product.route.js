@@ -5,8 +5,10 @@ const orderController = require('../order/order.controller')
 const { validateProduct, styleProductSchema } = require('../../validation/productValidation');
 const validationMiddleware = require('../../middleware/validationMiddleware');
 const { checkFollowers } = require('../../utils');
+const { upload } = require('../../utils/upload');
+
 // Create a Product
-router.post('/products',checkFollowers, validateProduct, productController.createProduct);
+router.post('/products',upload.any(), checkFollowers, [validateProduct],productController.createProduct);
 
 // Get All Products
 router.get('/products', productController.getAllProducts);
@@ -15,7 +17,7 @@ router.get('/products', productController.getAllProducts);
 router.get('/products/:id', productController.getProductById);
 
 // Update Product
-router.put('/products/:id',  productController.updateProduct);
+router.put('/products/:id', upload.any(),  productController.updateProduct);
 
 // Delete Product
 router.delete('/products/:id', productController.deleteProduct);
