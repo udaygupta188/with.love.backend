@@ -6,7 +6,8 @@ const category = require('./category/category.route');
 const role = require('./role/role.route');
 const subRoutes = require('./subRole/subRole.route');
 const ads = require('./ads/ads.route');
-const requestsRoutes = require('./requests/requests.route')
+const requestsRoutes = require('./requests/requests.route');
+const colorRoutes = require('./color/color.routes')
 const router = express.Router();
 
 // Set up routes
@@ -18,6 +19,6 @@ router.use('/admin', role);
 router.use('/admin', subRoutes)
 router.use('/admin',ads);
 router.use('/admin', requestsRoutes);
-
+router.use('/admin', colorRoutes )
 
 module.exports = router;
