@@ -12,7 +12,7 @@ const bodyParser = require('body-parser');
 const app = express();
 const port = process.env.PORT || 5111;
 const corsOptions = {
-    origin: 'http://localhost:5173',
+    origin: '*',
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true

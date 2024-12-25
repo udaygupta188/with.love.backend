@@ -8,7 +8,7 @@ const { checkFollowers } = require('../../utils');
 const { upload } = require('../../utils/upload');
 
 // Create a Product
-router.post('/products',upload.any(), checkFollowers, [validateProduct],productController.createProduct);
+router.post('/products',upload.any() , checkFollowers, [validateProduct],productController.createProduct);
 
 // Get All Products
 router.get('/products', productController.getAllProducts);
