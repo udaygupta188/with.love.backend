@@ -35,7 +35,7 @@ const productSchema = new mongoose.Schema({
         width: Number,
         height: Number,
     },
-    color:{type:String, },
+    color:[{type:mongoose.Schema.Types.ObjectId, ref:'Color' }],
     styleRecommendations: { type: mongoose.Schema.Types.ObjectId, ref: "HowToStyle" },
     createdAt: { type: Date, default: Date.now },
 });
