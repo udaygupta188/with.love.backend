@@ -15,8 +15,9 @@ const corsOptions = {
     origin: '*',
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true
+    credentials: true, // Enable credentials
 };
+
 
 //Express Middlewares
 app.use(express.json({ limit: '500mb' }));
