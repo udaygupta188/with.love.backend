@@ -6,9 +6,10 @@ const { validateProduct, styleProductSchema } = require('../../validation/produc
 const validationMiddleware = require('../../middleware/validationMiddleware');
 const { checkFollowers } = require('../../utils');
 const { upload } = require('../../utils/upload');
+const { verifyUser } = require('../../middleware/authMiddleware');
 
 // Create a Product
-router.post('/products',upload.any() , checkFollowers, [validateProduct],productController.createProduct);
+router.post('/products',upload.any() ,verifyUser, checkFollowers, [validateProduct],productController.createProduct);
 
 // Get All Products
 router.get('/products', productController.getAllProducts);

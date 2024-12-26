@@ -9,6 +9,7 @@ const createProduct = async (req, res) => {
     const productData = {
       ...req.body,
       images: imagePaths,
+      userId: req.user._id
     };
     const product = await productService.createProduct(productData  );
     return apiSuccessResponse(res, 'Product created successfully', product, HTTP_STATUS.CREATED);
