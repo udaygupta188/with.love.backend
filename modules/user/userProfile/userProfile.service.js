@@ -375,6 +375,27 @@ const sendOtp = async (payload) => {
   }
 };
 
+const resendOtp = async(payload) =>{
+  try {
+    const isOtpExpired = await OTP.findOne({ email: payload.email }).sort({ createdAt: -1 });
+    if (isOtpExpired && isOtpExpired.expiresAt > new Date()) {
+      return { status: false, message: "Current OTP is still valid, not expired yet" };
+    }
+    const otp = Math.floor(100000 + Math.random() * 900000);
+    const expirationTime = new Date(Date.now() + 5 * 60 * 1000);
+    await sendRegistrationEmail(payload.email, otp);
+    const storeOtp = new OTP({
+      email: payload.email,
+      otp: otp,
+      expiresAt: expirationTime,
+    });
+    await storeOtp.save();
+    return { status: true, message: "OTP Send On Your Mail", data: otp };
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
+
 const validateOtp = async (payload) => {
   try {
     const otp = await OTP.findOne({ email: payload.data.email });
@@ -473,4 +494,5 @@ module.exports = {
   selectUserType,
   selectSubRole,
   sendOtp,
+  resendOtp
 };

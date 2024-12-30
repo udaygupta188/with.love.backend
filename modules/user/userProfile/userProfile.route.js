@@ -5,9 +5,10 @@ const userController = require('./userProfile.controller');
 const { checkFollowers } = require('../../../utils');
 const validateSocialDetail = require('../../../validation/socialDetailValidation');
 const { verifyUser } = require('../../../middleware/authMiddleware');
+const { upload } = require('../../../utils/upload');
 
 router.get('/profile',verifyUser,userController.getProfile);
-router.put('/profile-update', verifyUser, userController.updateProfile);
+router.put('/profile-update',upload.any(), verifyUser, userController.updateProfile);
 router.post('/follow/:targetUserId', verifyUser, userController.followUser);
 router.post('/unfollow/:id', verifyUser, userController.unfollowUser);
 router.post("/become-curator", verifyUser,checkFollowers, userController.becomeCurator);

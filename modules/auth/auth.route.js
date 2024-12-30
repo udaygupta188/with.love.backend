@@ -24,11 +24,12 @@ router.post('/test-email', sendTestEmail);
 
 router.post('/user/register', validationMiddleware.validateRequest(basicInfoSchema), userController.registeration);
 router.post('/send-otp',validationMiddleware.validateRequest(SendOtpScehma), userController.sendOtp);
+router.post('resend-otp', validationMiddleware.validateRequest(SendOtpScehma), userController.resendOtp);
 router.post('/validate-otp',validationMiddleware.validateRequest(validateOtpScehma), userController.validateOtp);
 
 router.post('/set-password', validationMiddleware.validateRequest(setPasswordSchema),userController.setPassword);
-router.post('/select-user-type',validationMiddleware.validateRequest(selectUserTypeSchema), userController.selectUserType)
-router.post('/select-sub-role',validationMiddleware.validateRequest(selectSubRoleSchema), userController.selectSubRole)
+router.post('/select-user-type',validationMiddleware.validateRequest(selectUserTypeSchema), userController.selectUserType);
+router.post('/select-sub-role',validationMiddleware.validateRequest(selectSubRoleSchema), userController.selectSubRole);
 
 
 module.exports = router;

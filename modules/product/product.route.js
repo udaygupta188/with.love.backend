@@ -10,7 +10,26 @@ const { verifyUser } = require('../../middleware/authMiddleware');
 
 // Create a Product
 router.post('/products',upload.any() ,verifyUser, checkFollowers, [validateProduct],productController.createProduct);
-
+// router.post(
+//     '/products',
+//     upload.any(), // 'image' should match the name of the file field in your form
+//     (req, res, next) => {
+//       if (!req.files) {
+//         return res.status(400).json({ msg: 'No file uploaded!' });
+//       }
+//       next(); // Continue to the next middleware after successful upload
+//     },
+//     (err, req, res, next) => {
+//         if (err) {
+//           return res.status(500).json({ msg: `Internal Server Error: ${err.message}` });
+//         }
+//         next();
+//       },
+//     verifyUser,
+//     checkFollowers,
+//     [validateProduct],
+//     productController.createProduct
+//   );
 // Get All Products
 router.get('/products', productController.getAllProducts);
 

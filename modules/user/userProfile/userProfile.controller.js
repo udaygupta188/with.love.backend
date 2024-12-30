@@ -142,6 +142,10 @@ const updateProfile = async (req, res) => {
     const userId = req.user._id; // Get userId from authenticated user
     const updateData = req.body;
 
+    if(req.files){
+      updateData.profile_avatar = req.files[0].path
+    }
+
     const result = await userService.updateProfile(userId, updateData);
 
     return apiSuccessResponse(res, result.message, result.user, HTTP_STATUS.OK);
@@ -434,6 +438,18 @@ const sendOtp = async (req, res) => {
   }
 };
 
+const resendOtp = async(req, res) =>{
+  try {
+    const result = await userService.resendOtp(req.body);
+    if (!result.status) {
+      apiErrorResponse(res, result.message, null, HTTP_STATUS.BAD_REQUEST);
+    }
+    apiSuccessResponse(res, result.message, {}, HTTP_STATUS.OK);
+  } catch (error) {
+    apiErrorResponse(res, 'Internal Server Error', null, HTTP_STATUS.INTERNAL_SERVER_ERROR)
+  }
+}
+
 const validateOtp = async (req, res) => {
   try {
     // const { email, otp } = req.body;
@@ -523,4 +539,5 @@ module.exports = {
   selectUserType,
   selectSubRole,
   sendOtp,
+  resendOtp
 };
