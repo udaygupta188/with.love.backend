@@ -344,13 +344,19 @@ const registeration = async (payload) => {
       currentStatus = "active";
       seller_approval= true
     }
+
     console.log(payload,"payload")
+
+    const subRoleIds = Array.isArray(payload.subRoleId) 
+      ? payload.subRoleId.filter((id) => id) // Filter out empty/null values
+      : [];
+
     const result = new User({
       status: currentStatus,
       email: payload.email,
       name: payload.name,
       role: payload.roleId,
-      subRole: payload.subRoleId,
+      subRole: subRoleIds,
       password: hashedPassword,
       username: username[1],
       seller_approval: seller_approval,
