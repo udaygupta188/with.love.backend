@@ -326,7 +326,7 @@ const getFollowing = async (userId) => {
 
 const registeration = async (payload) => {
   try {
-    console.log(payload);
+    console.log(payload,"paylload 329");
     const user = await User.findOne({ email: payload.email });
     const role = await Role.findOne({ _id: payload.roleId });
     if (user) {
@@ -336,11 +336,15 @@ const registeration = async (payload) => {
     const emailForUsername = emailParts[0];
 
     const username = await suggestUsername(emailForUsername);
+    console.log("339", role)
     const hashedPassword = await bcrypt.hash(payload.password, 10);
     let currentStatus = "inactive";
+    let seller_approval = false;
     if (role.name === "User") {
       currentStatus = "active";
+      seller_approval= true
     }
+    console.log(payload,"payload")
     const result = new User({
       status: currentStatus,
       email: payload.email,
@@ -349,6 +353,7 @@ const registeration = async (payload) => {
       subRole: payload.subRoleId,
       password: hashedPassword,
       username: username[1],
+      seller_approval: seller_approval,
       profile_completeness: 1,
     });
     await result.save();

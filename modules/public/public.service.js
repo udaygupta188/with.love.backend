@@ -2,22 +2,23 @@ const { Product } = require("../product/product.model");
 const productService = require("../product/product.service")
 
 const { countries } = require('countries-list');
+const  SearchTagsHistory  = require("../searchTagsHistory/searchTagsHistory.model");
 
 const getAllCountries = async () => {
-  // No need to fetch data, use the imported 'countries' directly
-  return Object.keys(countries).map((key) => {
-    const { name, native, phone, continent, capital, currency, languages } = countries[key];
-    return {
-      code: key,
-      name,
-      native,
-      phone,
-      continent,
-      capital,
-      currency,
-      languages,
-    };
-  });
+    // No need to fetch data, use the imported 'countries' directly
+    return Object.keys(countries).map((key) => {
+        const { name, native, phone, continent, capital, currency, languages } = countries[key];
+        return {
+            code: key,
+            name,
+            native,
+            phone,
+            continent,
+            capital,
+            currency,
+            languages,
+        };
+    });
 };
 
 
@@ -45,9 +46,9 @@ const globalSearch = async (searchQuery) => {
         const query = {};
         const page = parseInt(searchQuery.page) || 1; // Default to page 1 if not specified
         const limit = parseInt(searchQuery.limit) || 10; // Default limit of 10 items per page
-        
+
         const skip = (page - 1) * limit; // Calculate how many documents to skip
-        
+
         if (searchQuery.name) {
             // Using regex for partial match, case-insensitive
             query.name = { $regex: searchQuery.name, $options: 'i' };
@@ -60,6 +61,11 @@ const globalSearch = async (searchQuery) => {
         if (searchQuery.tags) {
             let tags = searchQuery.tags.join(',')
             query.tags = { $in: tags };
+            const searchTags = new SearchTagsHistory({
+                tags,
+        });
+
+            await searchTags.save();
         }
 
         if (searchQuery.priceRange) {
@@ -83,10 +89,19 @@ const globalSearch = async (searchQuery) => {
         throw new Error('Error searching product: ' + error.message);
     }
 };
+const getTagsList = async () => {
+    try {
+        const res = await SearchTagsHistory.find({});
+        return res
+    } catch (error) {
+        throw new Error('Error occured ')
+    }
+}
 
 module.exports = {
     getAllCountries,
     productSuggestion,
     globalSearch,
-    curatorsSuggestion
+    curatorsSuggestion,
+    getTagsList
 }
