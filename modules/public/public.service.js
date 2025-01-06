@@ -76,7 +76,7 @@ const globalSearch = async (searchQuery) => {
             query.rating = { $gte: searchQuery.rating };
         }
 
-        const result = await Product.find(query).populate('brand categories').limit(limit).skip(skip);
+        const result = await Product.find(query).populate('categories').limit(limit).skip(skip);
         const totalDocuments = await Product.countDocuments(query); // Get total number of documents for the query
 
         return {
