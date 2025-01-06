@@ -10,7 +10,7 @@ const seedAdmins = require("./seed/adminSeeder");
 const bodyParser = require('body-parser');
 //Express Server Setup
 const app = express();
-const port = process.env.PORT || 5111;
+const port = 5111;
 const corsOptions = {
     origin: '*',
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
