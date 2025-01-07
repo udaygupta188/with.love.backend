@@ -25,32 +25,58 @@ const login = async (req, res) => {
 
 // controller for google Login
 const googleLogin = async (req, res) => {
-  const { email } = req.body;
-  console.log(idToken, "token")
+  const { access_token } = req.body;
+  console.log(access_token, "access_token", req.body)
   try {
-    let user = await User.findOne({ email: email });
+       // Fetch user information from Google API using access token
+       const response = await fetch(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${access_token}`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+          Accept: 'application/json',
+        },
+      });
 
-    console.log(user)
-    if (!user) {
-      return apiErrorResponse(res, 'No account found by this email', null, HTTP_STATUS.BAD_REQUEST)
+    // Parse the response as JSON
+    const ress = await response.json();
+      // Check if Google API response is valid
+      if (!response.ok || !ress.email) {
+        return apiErrorResponse(res, 'Invalid Google token or email not found', null, HTTP_STATUS.UNAUTHORIZED);
+      } // Check if user exists in the database by email
+      let user = await User.findOne({ email: ress.email });
+      
+      // If user doesn't exist, create a new user
+      if (!user) {
+        const randomPassword = (Math.random() + 1).toString(36).substring(7); // Generating a random password
+        const hashedPassword = await bcrypt.hash(randomPassword, 10);  // Hash the random password
+        
+        user = new User({
+          email: ress.email,
+          password: hashedPassword,  // Save the hashed password (even though it may not be used)
+        });
+  
+        await user.save();
+      }
+  
+      // Generate tokens for the user
+      const tokens = await authService.generateTokens(user);
+  
+      // Assuming sessionToken is generated somewhere in the user object
+      const sessionToken = user.sessionToken || '';
+  
+      // Prepare data to send in response
+      const data = {
+        ...tokens,
+        sessionToken,
+      };
+  
+      return apiSuccessResponse(res, 'User logged in successfully', data, HTTP_STATUS.OK);
+  
+    } catch (error) {
+      console.error('User Login error:', error);
+      return apiErrorResponse(res, error.message, null, HTTP_STATUS.UNAUTHORIZED);
     }
-
-    const tokens = await authService.generateTokens(user)
-    const sessionToken = user.sessionToken;
-
-    const data = {
-      ...tokens,
-      sessionToken
-    };
-    return apiSuccessResponse(res, 'User logged in successfully', data);
-
-  } catch (error) {
-
-    console.error('User Login error:', error);
-    return apiErrorResponse(res, error.message, null, HTTP_STATUS.UNAUTHORIZED);
-
-  }
-}
+  };
 
 // Controller for admin login
 const loginAdmin = async (req, res) => {
