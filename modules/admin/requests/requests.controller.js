@@ -16,7 +16,7 @@ const updateRequestStatus = async (req, res) => {
         if(!requests.status){
 
         }
-        return apiSuccessResponse(res, "Request updated successfully", null, HTTP_STATUS.OK);
+        return apiSuccessResponse(res, "Request updated successfully", requests, HTTP_STATUS.OK);
     } catch (error) {
         return apiErrorResponse(res, "Error Occured", error.message, HTTP_STATUS.INTERNAL_SERVER_ERROR);
     }

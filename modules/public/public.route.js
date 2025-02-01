@@ -17,7 +17,7 @@ router.get('/product-suggestions',publicController.productSuggestion);
 router.get('/curators-suggestions',publicController.curatorsSuggestion)
 
 router.get('/search',publicController.globalSearch);
-
+router.get('/searched-tags', publicController.getTagsList)
 // router.get('/get-adds',()=>{});
 
 

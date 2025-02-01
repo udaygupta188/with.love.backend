@@ -10,6 +10,7 @@ const { basicInfoSchema, validateOtpScehma, setPasswordSchema, selectUserTypeSch
 const validationMiddleware = require('../../middleware/validationMiddleware')
 
 router.post('/login', authController.login);
+router.post('/google-login', authController.googleLogin)
 router.post('/refresh-token', authController.refreshToken);
 router.post('/admin/login', authController.loginAdmin);
 

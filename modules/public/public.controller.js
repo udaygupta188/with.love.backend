@@ -42,6 +42,16 @@ const globalSearch = async (req, res) => {
     const searchProducts = await publicServices.globalSearch(req.query)
     return apiSuccessResponse(res, 'Suggested products', searchProducts, HTTP_STATUS.OK)
   } catch (error) {
+    console.log(error)
+    return apiErrorResponse(res, 'Internal Server Error', error.message, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+  }
+}
+
+const getTagsList = async(req, res)=>{
+  try {
+    const searchedTags = await publicServices.getTagsList()
+    return apiSuccessResponse(res, 'Tags List', searchedTags, HTTP_STATUS.OK)
+  } catch (error) {
     return apiErrorResponse(res, 'Internal Server Error', error.message, HTTP_STATUS.INTERNAL_SERVER_ERROR);
   }
 }
@@ -49,5 +59,6 @@ module.exports = {
   getCountries,
   productSuggestion,
   curatorsSuggestion,
-  globalSearch
+  globalSearch,
+  getTagsList
 };

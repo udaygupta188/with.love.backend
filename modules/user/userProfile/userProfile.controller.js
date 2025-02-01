@@ -1,113 +1,107 @@
 const userService = require("./userProfile.service");
-const brandService = require("../../admin/brand/brand.service");
 const {
   apiSuccessResponse,
   apiErrorResponse,
   HTTP_STATUS,
 } = require("../../../utils"); // Importing All helper functions
-const Role = require("../../admin/role/role.model");
-const Brand = require("../../admin/brand/brand.model");
-const Requests = require("../../admin/requests/requests.model");
 
-const register = async (req, res) => {
-  try {
-    const brandRole = await Role.findOne({
-      name: { $regex: "Brand", $options: "i" },
-    });
 
-    const {
-      name,
-      email,
-      username,
-      password,
-      role,
-      profile_avatar,
-      phone,
-      address,
-      date_of_birth,
-      gender,
-      description,
-      logo,
-      subRole,
-    } = req.body;
 
-    // Validate input
-    if (!name || !email || !username || !password || !role) {
-      return apiErrorResponse(
-        res,
-        "Name, email, username,  password and role are required.",
-        null,
-        HTTP_STATUS.BAD_REQUEST
-      );
-    }
+// const register = async (req, res) => {
+//   try {
+//     const brandRole = await Role.findOne({
+//       name: { $regex: "Brand", $options: "i" },
+//     });
 
-    // Check if username already exists
-    const usernameCheck = await userService.usernameCheck(username);
-    if (usernameCheck.exists) {
-      return apiErrorResponse(
-        res,
-        "Username already exists.",
-        null,
-        HTTP_STATUS.BAD_REQUEST
-      );
-    }
-    console.log(role, brandRole._id.toString());
-    let roleId = brandRole._id.toString();
-    // Call service to register user
-    const result = await userService.registerUser({
-      name,
-      email,
-      username,
-      password,
-      profile_avatar,
-      phone,
-      address,
-      date_of_birth,
-      gender,
-      role,
-      status: role === roleId ? "inactive" : "active",
-      subRole,
-    });
-    if (role === roleId) {
-      const brand = new Brand({
-        name: name,
-        description: description,
-        logo: logo,
-        status: "inactive",
-        createdBy: result.user._id,
-        createdByModel: "User",
-      });
-      await brand.save();
-      const newRequest = new Requests({
-        brandId: brand?._id,
-        userId: result.user._id,
-      });
-      await newRequest.save();
-    }
-    if (result.success) {
-      return apiSuccessResponse(
-        res,
-        "User registered successfully",
-        result.user,
-        HTTP_STATUS.CREATED
-      );
-    } else {
-      return apiErrorResponse(
-        res,
-        result.message,
-        null,
-        HTTP_STATUS.INTERNAL_SERVER_ERROR
-      );
-    }
-  } catch (error) {
-    return apiErrorResponse(
-      res,
-      error.message,
-      null,
-      HTTP_STATUS.INTERNAL_SERVER_ERROR
-    );
-  }
-};
+//     const {
+//       name,
+//       email,
+//       username,
+//       password,
+//       role,
+//       profile_avatar,
+//       phone,
+//       address,
+//       date_of_birth,
+//       gender,
+//       description,
+//       logo,
+//       subRole,
+//     } = req.body;
+
+//     // Validate input
+//     if (!name || !email || !username || !password || !role) {
+//       return apiErrorResponse(
+//         res,
+//         "Name, email, username,  password and role are required.",
+//         null,
+//         HTTP_STATUS.BAD_REQUEST
+//       );
+//     }
+
+//     // Check if username already exists
+//     const usernameCheck = await userService.usernameCheck(username);
+//     if (usernameCheck.exists) {
+//       return apiErrorResponse(
+//         res,
+//         "Username already exists.",
+//         null,
+//         HTTP_STATUS.BAD_REQUEST
+//       );
+//     }
+//     console.log(role, brandRole._id.toString());
+//     let roleId = brandRole._id.toString();
+//     // Call service to register user
+//     const result = await userService.registerUser({
+//       name,
+//       email,
+//       username,
+//       password,
+//       profile_avatar,
+//       phone,
+//       address,
+//       date_of_birth,
+//       gender,
+//       role,
+//       status: role === roleId ? "inactive" : "active",
+//       subRole,
+//     });
+//     if (role === roleId) {
+//       const brand = new Brand({
+//         name: name,
+//         description: description,
+//         logo: logo,
+//         status: "inactive",
+//         createdBy: result.user._id,
+//         createdByModel: "User",
+//       });
+//       await brand.save();
+
+//     }
+//     if (result.success) {
+//       return apiSuccessResponse(
+//         res,
+//         "User registered successfully",
+//         result.user,
+//         HTTP_STATUS.CREATED
+//       );
+//     } else {
+//       return apiErrorResponse(
+//         res,
+//         result.message,
+//         null,
+//         HTTP_STATUS.INTERNAL_SERVER_ERROR
+//       );
+//     }
+//   } catch (error) {
+//     return apiErrorResponse(
+//       res,
+//       error.message,
+//       null,
+//       HTTP_STATUS.INTERNAL_SERVER_ERROR
+//     );
+//   }
+// };
 
 const getProfile = async (req, res) => {
   try {
@@ -522,7 +516,7 @@ const selectSubRole = async (req, res) => {
 };
 
 module.exports = {
-  register,
+  // register,
   getProfile,
   updateProfile,
   followUser,
