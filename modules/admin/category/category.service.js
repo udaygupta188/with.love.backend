@@ -1,6 +1,7 @@
 const Category = require('./category.model');
 
 const createCategory = async (data) => {
+
     const {
         name,
         parent,
@@ -112,8 +113,9 @@ const getAllCategories = async (page = 1, limit = 10) => {
             .skip(skip)
             .limit(limit)
             .exec();
+            
         const totalCount = await Category.countDocuments().exec();
-
+console.log(categories);
         return {
             categories,
             totalCount,

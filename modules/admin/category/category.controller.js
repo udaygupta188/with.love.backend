@@ -1,37 +1,28 @@
 const { HTTP_STATUS, apiErrorResponse, apiSuccessResponse } = require('../../../utils');
 const categoryService = require('./category.service')
+require('dotenv').config();
+
 // Create a new category
 const createCategory = async (req, res) => {
     try {
-        const adminId = req.admin._id;
-        const categoryData = { ...req.body, createdBy: adminId };
-        
-        const newCategory = await categoryService.createCategory(categoryData);
+        const adminId = req.admin._id; 
+        // const image = req.file ? req.file.path : null; 
+        const image = req.file ? `${process.env.BASE_URL}${req.file.path.replace(/\\/g, '/')}` : null;
+        const categoryData = {
+            ...req.body,  
+            image,      
+            createdBy: adminId
+        };
 
-        if(newCategory){
-            return apiSuccessResponse(
-                res,
-                'Category Created Successfully',
-                newCategory,
-                HTTP_STATUS.CREATED
-            );
-        }else{
-            return apiErrorResponse(      
-                res, 
-                err.message, 
-                null, 
-                HTTP_STATUS.NOT_FOUND
-            );
-        }
+        const newCategory = await categoryService.createCategory(categoryData); // Call service
+
+        return apiSuccessResponse(res, 'Category Created Successfully', newCategory, HTTP_STATUS.CREATED);
     } catch (err) {
-        return apiErrorResponse(      
-            res, 
-            err.message, 
-            null, 
-            HTTP_STATUS.BAD_REQUEST
-        );
+        console.error(err);
+        return apiErrorResponse(res, err.message, null, HTTP_STATUS.BAD_REQUEST);
     }
 };
+
 
 const updateCategory = async (req, res) => {
     try {
